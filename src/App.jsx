@@ -149,7 +149,7 @@ export default function App() {
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       {/* Noise Overlay */}
       <div 
         className="fixed inset-0 pointer-events-none z-[9997] opacity-[0.03]"

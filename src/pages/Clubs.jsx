@@ -1,91 +1,116 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import gsap from 'gsap';
-import { clubs } from '../data/mockData';
-import SpotlightCard from '../components/ui/SpotlightCard';
-import FloatingObject from '../components/ui/FloatingObject';
-import SplitText from '../components/ui/SplitText';
+import { Search as SearchIcon } from 'lucide-react';
+import { clubs } from '../data/clubs';
+import ClubCard from '../components/ui/ClubCard';
+import ClubModal from '../components/ui/ClubModal';
 
 export default function Clubs() {
-  const [filter, setFilter] = useState('All');
-  const categories = ['All', 'Tech', 'Arts', 'Sports', 'Cultural', 'Social'];
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedClub, setSelectedClub] = useState(null);
 
-  const filteredClubs = clubs.filter(c => filter === 'All' || c.category === filter);
+  const categories = ['All', 'Tech', 'Cultural', 'Social', 'Arts', 'Sports'];
 
-  useEffect(() => {
-    // Reveal animation when filtered list changes
-    gsap.fromTo('.club-card-stagger', 
-      { opacity: 0, scale: 0.8, y: 20 },
-      { opacity: 1, scale: 1, y: 0, duration: 0.5, stagger: 0.05, ease: "back.out(1.2)", clearProps: "all" }
-    );
-  }, [filter]);
+  const filteredClubs = clubs.filter(c => 
+    (activeCategory === 'All' || c.category === activeCategory) &&
+    c.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="page-container min-h-screen pb-32"
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      exit={{ opacity: 0 }}
+      className="page-container min-h-[100svh] pb-32 bg-[#0A0B0F]"
     >
-      <section className="pt-32 pb-16 px-4 text-center border-b border-white/5 bg-gradient-to-b from-[#111827] to-transparent">
+      <section className="pt-32 pb-12 px-4 text-center">
         <div className="badge badge-red mb-4">🏛️ Find Your Tribe</div>
-        <h1 className="font-outfit font-black text-5xl md:text-7xl text-white mb-6">
-          <SplitText text="Our Clubs & Forums" />
+        <h1 className="font-outfit font-black text-5xl md:text-6xl text-white mb-6 mt-4">
+          Our Clubs & Forums
         </h1>
         <p className="text-white/50 max-w-2xl mx-auto text-lg mb-10">
-          From cutting-edge robotics to classical dance, our 21 student-run clubs offer a platform for every passion.
+          Find your people. Build your passion. Explore our vibrant student-run communities.
         </p>
 
-        <div className="flex flex-wrap justify-center gap-2">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setFilter(cat)}
-              className={`relative px-5 py-2 rounded-lg font-outfit text-sm font-semibold transition-colors outline-none ${filter === cat ? 'text-white' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
-            >
-              {filter === cat && (
-                <motion.div
-                  layoutId="club-tab-bg"
-                  className="absolute inset-0 bg-[#D62828] rounded-lg -z-10"
-                  initial={false}
-                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                />
-              )}
-              <span className="relative z-10">{cat}</span>
-            </button>
-          ))}
-        </div>
-      </section>
+        {/* Filter + Search Bar Area */}
+        <div className="max-w-[1200px] mx-auto flex flex-col items-center gap-6 mb-8">
+          
+          {/* Search Input */}
+          <div className="relative w-full max-w-md">
+            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4A4D5E]" size={20} />
+            <input 
+              type="text" 
+              placeholder="Search clubs by name..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#161920] border border-white/10 rounded-[30px] py-[10px] pl-[44px] pr-[20px] text-white placeholder-[#4A4D5E] focus:outline-none focus:border-[#FF6B2B] transition-colors"
+            />
+          </div>
 
-      <section className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence mode="popLayout">
-            {filteredClubs.map((club, i) => (
-              <motion.div key={club.id} layout className="club-card-stagger">
-                <SpotlightCard className="p-8 h-full flex flex-col group items-center text-center">
-                  <FloatingObject floatY={8} duration={3.5 + (i % 3) * 0.5} className="mb-6">
-                    <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#111827] to-[#1a2333] border border-white/10 flex items-center justify-center text-4xl shadow-xl overflow-hidden group-hover:border-[#D62828]/50 group-hover:shadow-[0_10px_40px_rgba(214,40,40,0.2)] transition-all duration-300">
-                      {club.logo ? (
-                        <img src={club.logo} alt={club.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="font-outfit font-black text-white/20">{club.name.charAt(0)}</span>
-                      )}
-                    </div>
-                  </FloatingObject>
-
-                  <span className="badge badge-gold mb-3 !text-[9px]">{club.category}</span>
-                  <h3 className="font-outfit font-bold text-2xl text-white mb-3 group-hover:text-[#FFD700] transition-colors">{club.name}</h3>
-                  <p className="text-white/50 text-sm leading-relaxed mb-6 flex-grow">{club.description}</p>
-                  
-                  <div className="w-full h-[1px] bg-white/5 mb-4 group-hover:bg-[#D62828]/20 transition-colors" />
-                  
-                  <button className="text-[#D62828] text-sm font-bold uppercase tracking-wider group-hover:text-white transition-colors">
-                    View Details →
-                  </button>
-                </SpotlightCard>
-              </motion.div>
+          {/* Category Pills */}
+          <div className="flex gap-2 overflow-x-auto max-w-full pb-2 px-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`relative px-4 py-[7px] rounded-[30px] font-outfit text-xs font-semibold whitespace-nowrap outline-none transition-all ${
+                  activeCategory === cat 
+                    ? 'text-white' 
+                    : 'bg-[#161920] border border-white/5 text-[#8B8FA8] hover:border-white/20 hover:text-white'
+                }`}
+                style={activeCategory === cat ? {} : { border: '1px solid rgba(255,255,255,0.07)' }}
+              >
+                {activeCategory === cat && (
+                  <motion.div
+                    layoutId="active-pill"
+                    className="absolute inset-0 bg-[#FF6B2B] border border-[#FF6B2B] rounded-[30px] -z-10"
+                    initial={false}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                )}
+                {cat}
+              </button>
             ))}
-          </AnimatePresence>
+          </div>
+
         </div>
       </section>
+
+      {/* Grid Container */}
+      <motion.section 
+        className="max-w-[1200px] mx-auto px-6 py-8"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        {filteredClubs.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-[12px] sm:gap-[16px]">
+            <AnimatePresence mode="popLayout">
+              {filteredClubs.map((club, index) => (
+                <ClubCard 
+                  key={club.id} 
+                  club={club} 
+                  onClick={() => setSelectedClub(club)} 
+                />
+              ))}
+            </AnimatePresence>
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-white/40 text-lg">No clubs found matching your search.</p>
+          </div>
+        )}
+      </motion.section>
+
+      {/* Modal rendered via Portal */}
+      <ClubModal 
+        club={selectedClub} 
+        isOpen={!!selectedClub} 
+        onClose={() => setSelectedClub(null)} 
+      />
+
     </motion.div>
   );
 }
