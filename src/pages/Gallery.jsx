@@ -1,99 +1,147 @@
 import React, { useState } from 'react';
-import { X, Image, ZoomIn } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { galleryImages } from '../data/mockData';
-
-const categories = ['All', 'Events', 'Competitions', 'Workshops', 'Achievements'];
-
-function Lightbox({ image, onClose }) {
-  return (
-    <div className="lightbox-overlay" onClick={onClose}>
-      <button className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-2.5 transition-all" onClick={onClose}>
-        <X size={22} />
-      </button>
-      <div className="relative max-w-2xl w-full mx-4" onClick={e => e.stopPropagation()}>
-        <div className={`rounded-2xl bg-gradient-to-br ${image.color} h-[60vh] flex items-center justify-center`}>
-          <div className="text-center">
-            <div className="text-6xl mb-4">🖼️</div>
-            <p className="text-white font-outfit font-bold text-2xl">{image.title}</p>
-            <p className="text-white/60 text-sm mt-2">{image.category}</p>
-          </div>
-        </div>
-        <div className="mt-4 text-center">
-          <h3 className="font-outfit font-bold text-white text-xl">{image.title}</h3>
-          <span className="badge-blue mt-2 inline-block">{image.category}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
+import SplitText from '../components/ui/SplitText';
+import { X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 
 export default function Gallery() {
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [filter, setFilter] = useState('All');
+  const [selectedImgIndex, setSelectedImgIndex] = useState(null);
+  
+  const categories = ['All', 'Events', 'Clubs', 'Campus', 'Sports'];
 
-  const filtered = activeCategory === 'All'
-    ? galleryImages
-    : galleryImages.filter(img => img.category === activeCategory);
+  const filteredImages = galleryImages.filter(img => filter === 'All' || img.category === filter);
+
+  const handleNext = (e) => {
+    e.stopPropagation();
+    if (selectedImgIndex !== null) setSelectedImgIndex((selectedImgIndex + 1) % filteredImages.length);
+  };
+
+  const handlePrev = (e) => {
+    e.stopPropagation();
+    if (selectedImgIndex !== null) setSelectedImgIndex((selectedImgIndex - 1 + filteredImages.length) % filteredImages.length);
+  };
+
+  // Keyboard navigation
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (selectedImgIndex === null) return;
+      if (e.key === 'ArrowRight') handleNext(e);
+      if (e.key === 'ArrowLeft') handlePrev(e);
+      if (e.key === 'Escape') setSelectedImgIndex(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedImgIndex, filteredImages.length]);
 
   return (
-    <div className="page-container page-enter">
-      {/* Header */}
-      <div className="hero-gradient border-b border-white/10 pt-28 pb-16 px-4 text-center">
-        <div className="inline-flex items-center gap-2 bg-teal-500/15 border border-teal-500/30 rounded-full px-5 py-2 mb-6">
-          <Image size={14} className="text-teal-400" />
-          <span className="text-teal-400 text-sm font-semibold">Gallery</span>
-        </div>
-        <h1 className="section-title text-5xl md:text-6xl mb-3">Memories & Moments</h1>
-        <p className="section-subtitle max-w-xl mx-auto">
-          Relive the best moments from REVA Student Council events, competitions, and achievements
+    <motion.div 
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="page-container min-h-screen pb-32"
+    >
+      <section className="pt-32 pb-12 px-4 text-center">
+        <h1 className="font-outfit font-black text-5xl md:text-7xl text-white mb-6">
+          <SplitText text="Campus Gallery" />
+        </h1>
+        <p className="text-white/50 max-w-2xl mx-auto text-lg mb-10">
+          A visual journey through the events, initiatives, and everyday life at REVA University.
         </p>
-      </div>
 
-      <div className="section-padding max-w-7xl mx-auto">
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-3 mb-10 justify-center">
+        <div className="flex flex-wrap justify-center gap-2">
           {categories.map(cat => (
             <button
               key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${
-                activeCategory === cat
-                  ? 'bg-reva-red text-white shadow-lg shadow-reva-red/30 scale-105'
-                  : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10'
-              }`}
+              onClick={() => setFilter(cat)}
+              className={`relative px-5 py-2 rounded-full font-outfit text-sm font-semibold transition-colors outline-none ${filter === cat ? 'text-white' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
             >
-              {cat}
+              {filter === cat && (
+                <motion.div
+                  layoutId="gallery-tab-bg"
+                  className="absolute inset-0 bg-white/10 border border-white/20 rounded-full -z-10"
+                  initial={false}
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                />
+              )}
+              <span className="relative z-10">{cat}</span>
             </button>
           ))}
         </div>
+      </section>
 
-        {/* Photo Count */}
-        <p className="text-white/30 text-sm text-center mb-8">{filtered.length} photos</p>
+      <section className="max-w-7xl mx-auto px-4 py-8">
+        <motion.div layout className="masonry-grid">
+          <AnimatePresence mode="popLayout">
+            {filteredImages.map((img, i) => (
+              <motion.div
+                key={img.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.4 }}
+                className="masonry-item relative group cursor-pointer rounded-2xl overflow-hidden bg-[#111827]"
+                onClick={() => setSelectedImgIndex(i)}
+              >
+                <img 
+                  src={img.url} 
+                  alt={img.title} 
+                  className="w-full h-auto block group-hover:scale-105 transition-transform duration-700 ease-out" 
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-[#D62828]/0 group-hover:bg-[#D62828]/40 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <div className="w-12 h-12 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white scale-50 group-hover:scale-100 transition-transform duration-300 delay-100">
+                    <Maximize2 size={20} />
+                  </div>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                  <span className="badge badge-gold !text-[9px] mb-1">{img.category}</span>
+                  <h3 className="text-white font-outfit font-bold text-lg">{img.title}</h3>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      </section>
 
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filtered.map((img, i) => (
-            <button
-              key={img.id}
-              onClick={() => setSelectedImage(img)}
-              className="relative group rounded-2xl overflow-hidden aspect-square cursor-pointer card-hover"
-              style={{ animationDelay: `${i * 60}ms` }}
-            >
-              <div className={`w-full h-full bg-gradient-to-br ${img.color} flex items-center justify-center`}>
-                <span className="text-white/20 text-4xl">🖼️</span>
-              </div>
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-2">
-                <ZoomIn size={24} className="text-white" />
-                <p className="text-white font-semibold text-sm text-center px-2 leading-tight">{img.title}</p>
-                <span className="badge-blue text-xs">{img.category}</span>
-              </div>
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {selectedImgIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0B0F1A]/95 backdrop-blur-xl p-4 md:p-8"
+            onClick={() => setSelectedImgIndex(null)}
+          >
+            <button className="absolute top-6 right-6 text-white/50 hover:text-white p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors z-10" onClick={() => setSelectedImgIndex(null)}>
+              <X size={24} />
             </button>
-          ))}
-        </div>
-      </div>
 
-      {selectedImage && <Lightbox image={selectedImage} onClose={() => setSelectedImage(null)} />}
-    </div>
+            <button className="absolute left-6 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-3 bg-white/5 hover:bg-white/10 rounded-full transition-colors z-10 hidden sm:block" onClick={handlePrev}>
+              <ChevronLeft size={28} />
+            </button>
+            
+            <button className="absolute right-6 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-3 bg-white/5 hover:bg-white/10 rounded-full transition-colors z-10 hidden sm:block" onClick={handleNext}>
+              <ChevronRight size={28} />
+            </button>
+
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} transition={{ type: 'spring', damping: 25 }}
+              className="relative max-w-5xl w-full max-h-[85vh] flex flex-col items-center"
+              onClick={e => e.stopPropagation()}
+            >
+              <img 
+                src={filteredImages[selectedImgIndex].url} 
+                alt={filteredImages[selectedImgIndex].title} 
+                className="w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 to-transparent text-center rounded-b-lg">
+                <span className="badge badge-gold !text-[10px] mb-2">{filteredImages[selectedImgIndex].category}</span>
+                <h3 className="text-white font-outfit font-bold text-2xl">{filteredImages[selectedImgIndex].title}</h3>
+                <p className="text-white/40 text-sm mt-1">{selectedImgIndex + 1} of {filteredImages.length}</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

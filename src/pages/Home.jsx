@@ -1,24 +1,46 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { motion, useInView, useSpring, useMotionValue, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Calendar, Users, Image, MessageSquare, Star, Trophy, Zap, ChevronRight } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { councilInfo, events } from '../data/mockData';
-import { FloatingObject, MagneticButton, AnimatedCounter, ScrollReveal, SplitText, SpotlightCard, AuroraBackground, ParticleField } from '../components/Animations';
+import { clubs, events, councilInfo } from '../data/mockData';
+
+// UI Components
+import AuroraBackground from '../components/ui/AuroraBackground';
+import ParticleField from '../components/ui/ParticleField';
+import FloatingObject from '../components/ui/FloatingObject';
+import SplitText from '../components/ui/SplitText';
+import MagneticButton from '../components/ui/MagneticButton';
+import AnimatedCounter from '../components/ui/AnimatedCounter';
+import ScrollReveal from '../components/ui/ScrollReveal';
+import SpotlightCard from '../components/ui/SpotlightCard';
+import HorizontalScroll from '../components/ui/HorizontalScroll';
+import TextReveal from '../components/ui/TextReveal';
+import GlowOrb from '../components/ui/GlowOrb';
+import { ArrowRight, Calendar, Users, Image as ImageIcon, MessageSquare, Star } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
   const heroRef = useRef(null);
-  const upcomingEvents = events.filter((e) => e.category === 'upcoming').slice(0, 3);
-  const pastEvents = events.filter((e) => e.category === 'past').slice(0, 3);
+  const navigate = useNavigate();
+  const upcomingEvents = events.filter(e => e.category === 'upcoming').slice(0, 3);
+  
+  // Custom mock images for gallery preview
+  const galleryPreview = [
+    { id: 1, text: "TECHSPRINT '25", color: "from-blue-600 to-indigo-800" },
+    { id: 2, text: "REVAMP", color: "from-pink-600 to-rose-700" },
+    { id: 3, text: "SPORTS MEET", color: "from-emerald-500 to-teal-700" },
+    { id: 4, text: "ROBOTICS LAB", color: "from-cyan-600 to-blue-700" },
+    { id: 5, text: "FRESHERS", color: "from-amber-500 to-orange-600" },
+    { id: 6, text: "ALUMNI TALK", color: "from-purple-600 to-fuchsia-800" },
+  ];
 
-  // GSAP parallax on scroll for hero
   useEffect(() => {
-    const ctx = gsap.context(() => {
+    let ctx = gsap.context(() => {
       gsap.to('.hero-content', {
-        y: -80,
+        y: -100,
+        opacity: 0.2,
         ease: 'none',
         scrollTrigger: {
           trigger: heroRef.current,
@@ -31,394 +53,275 @@ export default function Home() {
     return () => ctx.revert();
   }, []);
 
-  // GSAP stagger for club logos on scroll
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo('.club-logo-item',
-        { scale: 0.7, opacity: 0, y: 30 },
-        {
-          scale: 1, opacity: 1, y: 0,
-          duration: 0.5,
-          stagger: 0.06,
-          ease: 'back.out(1.5)',
-          scrollTrigger: { trigger: '.clubs-logo-grid', start: 'top 85%' },
-        }
-      );
-    });
-    return () => ctx.revert();
-  }, []);
-
-  const stats = [
-    { label: 'Active Clubs', value: 23, suffix: '+', icon: '🏛️' },
-    { label: 'Events / Year', value: 50, suffix: '+', icon: '🎉' },
-    { label: 'Students', value: 8000, suffix: '+', icon: '👥' },
-    { label: 'Council Members', value: 40, suffix: '', icon: '⭐' },
-  ];
-
-  const clubNames = [
-    'Archons', 'Devbraze', 'Dopamine', 'Elite', 'FACE', 'Force',
-    'Fractionz', 'GDG', 'Incentia', 'KALAAPARVA', 'Mars', 'Mavericks',
-    'NARCISSA', 'Northeast Community', 'OsCode', 'Realitix',
-    'REVA Kannada Club', 'REVA Roboosphere', 'RISA', 'SPARC', 'Under25',
-  ];
-
-  const quickLinks = [
-    { to: '/events', icon: Calendar, label: 'Events', desc: 'Upcoming & past campus events', color: 'from-red-600 to-rose-700' },
-    { to: '/clubs', icon: Users, label: 'Clubs & Forums', desc: 'Explore all student clubs', color: 'from-amber-500 to-yellow-600' },
-    { to: '/gallery', icon: Image, label: 'Gallery', desc: 'Moments from campus life', color: 'from-violet-600 to-purple-700' },
-    { to: '/complaint', icon: MessageSquare, label: 'Complaint Box', desc: 'Share your concerns', color: 'from-teal-600 to-cyan-700' },
-  ];
-
   return (
-    <div className="page-container" style={{ overflowX: 'hidden' }}>
-
-      {/* ── HERO ── */}
-      <section
-        ref={heroRef}
-        style={{
-          position: 'relative',
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(135deg, #0D1B2A 0%, #1a0a0a 60%, #0D1B2A 100%)',
-        }}
-      >
+    <motion.div 
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="page-container overflow-hidden"
+    >
+      {/* ── [1] HERO ── */}
+      <section ref={heroRef} className="relative min-h-[100svh] flex flex-col items-center justify-center text-center pt-20 px-4">
         <AuroraBackground />
-        <ParticleField count={25} />
-
-        {/* Hero content with GSAP parallax class */}
-        <div
-          className="hero-content"
-          style={{
-            position: 'relative',
-            zIndex: 10,
-            textAlign: 'center',
-            padding: '0 1.5rem',
-            maxWidth: 800,
-            perspective: '1200px',
-          }}
-        >
-          {/* Floating council badge */}
-          <FloatingObject floatY={22} duration={5}>
-            <motion.div
-              initial={{ scale: 0, rotate: -10 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ duration: 0.8, ease: 'backOut', delay: 0.2 }}
-              style={{
-                width: 120,
-                height: 120,
-                margin: '0 auto 2rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                filter: 'drop-shadow(0 0 40px rgba(214,40,40,0.4))'
-              }}
-            >
-              <img src="/RevaStudentCouncil.png" alt="REVA Student Council Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-            </motion.div>
+        <ParticleField count={30} />
+        
+        <div className="hero-content relative z-10 max-w-4xl w-full flex flex-col items-center">
+          <FloatingObject floatY={20} duration={6} className="mb-8">
+            <div className="w-[100px] h-[100px] rounded-full bg-gradient-to-br from-[#D62828] to-[#FFD700] flex items-center justify-center text-5xl shadow-[0_0_60px_rgba(214,40,40,0.5),_0_0_120px_rgba(214,40,40,0.2)]">
+              🏛️
+            </div>
           </FloatingObject>
 
-          {/* Tag line */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '6px 16px',
-              background: 'rgba(214,40,40,0.15)',
-              border: '1px solid rgba(214,40,40,0.35)',
-              borderRadius: 999,
-              marginBottom: '1.5rem',
-            }}
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+            className="mb-6 px-5 py-1.5 rounded-full border border-[#FFD700]/30 bg-[#D62828]/10 text-[#FFD700] text-xs font-black tracking-[0.15em] uppercase shadow-[0_0_20px_rgba(255,215,0,0.1)]"
           >
-            <Zap size={12} style={{ color: '#D62828' }} />
-            <span style={{ color: '#FFD700', fontSize: 11, fontWeight: 700, letterSpacing: '0.35em', textTransform: 'uppercase' }}>
-              REVA University Student Council
-            </span>
+            ✦ REVA UNIVERSITY STUDENT COUNCIL
           </motion.div>
 
-          {/* Main heading — SplitText */}
-          <h1 style={{ fontFamily: "'Outfit', sans-serif", lineHeight: 1.1, marginBottom: '1.5rem' }}>
-            <div style={{ fontSize: 'clamp(2.8rem, 7vw, 5.5rem)', fontWeight: 900, color: '#fff' }}>
-              <SplitText text="Your Voice." delay={0.8} staggerDelay={0.05} />
-            </div>
-            <div style={{ fontSize: 'clamp(2.8rem, 7vw, 5.5rem)', fontWeight: 900 }}>
-              <SplitText
-                text="Your Campus."
-                delay={1.1}
-                staggerDelay={0.04}
-                className="gradient-text"
-              />
-            </div>
+          <h1 className="font-outfit leading-[1.05] mb-6 flex flex-col">
+            <span className="text-[clamp(3.5rem,8vw,5.5rem)] font-black text-white">
+              <SplitText text="Your Voice." delay={0.6} />
+            </span>
+            <span className="text-[clamp(3.5rem,8vw,5.5rem)] font-black gradient-text">
+              <SplitText text="Your Campus." delay={0.9} staggerDelay={0.03} />
+            </span>
           </h1>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2 }}
-            style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(1rem, 2vw, 1.2rem)', marginBottom: '2.5rem', lineHeight: 1.7 }}
+          <motion.p 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 1 }}
+            className="text-white/60 text-lg md:text-xl max-w-2xl font-medium mb-10 leading-relaxed"
           >
-            The official governing body of REVA University — shaping campus life, <br className="hidden md:block" />
-            empowering students, building futures.
+            The official governing body of REVA University — shaping campus life, amplifying ideas, and building a thriving student ecosystem.
           </motion.p>
 
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 2.2 }}
-            style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.2 }}
+            className="flex flex-col sm:flex-row gap-4"
           >
-            <Link to="/events">
-              <MagneticButton className="btn-primary" style={{ fontSize: '1rem', padding: '12px 28px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                Explore Events <ArrowRight size={16} />
-              </MagneticButton>
-            </Link>
-            <Link to="/clubs">
-              <MagneticButton className="btn-outline" style={{ fontSize: '1rem', padding: '12px 28px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                Discover Clubs
-              </MagneticButton>
-            </Link>
+            <MagneticButton className="btn-primary px-8 py-4 text-base gap-2" onClick={() => navigate('/events')}>
+              Explore Events <ArrowRight size={18} />
+            </MagneticButton>
+            <MagneticButton className="btn-outline px-8 py-4 text-base" onClick={() => navigate('/clubs')}>
+              Discover Clubs
+            </MagneticButton>
           </motion.div>
         </div>
 
-        {/* Scroll indicator */}
-        <motion.div
-          style={{ position: 'absolute', bottom: 36, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.8, repeat: Infinity }}
+        {/* Scroll Indicator */}
+        <motion.div 
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 w-[26px] h-[44px] border-2 border-white/20 rounded-full flex justify-center pt-2"
+          animate={{ y: [0, 8, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <div style={{ width: 24, height: 40, border: '2px solid rgba(255,255,255,0.25)', borderRadius: 12, display: 'flex', justifyContent: 'center', paddingTop: 6 }}>
-            <motion.div
-              style={{ width: 4, height: 8, background: '#D62828', borderRadius: 2 }}
-              animate={{ y: [0, 12, 0], opacity: [1, 0, 1] }}
-              transition={{ duration: 1.8, repeat: Infinity }}
-            />
-          </div>
+          <motion.div 
+            className="w-1 h-2 bg-[#D62828] rounded-full"
+            animate={{ y: [0, 14, 0], opacity: [1, 0, 1] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          />
         </motion.div>
       </section>
 
-      {/* ── STATS BAR ── */}
-      <section style={{ background: 'rgba(214,40,40,0.08)', borderTop: '1px solid rgba(214,40,40,0.2)', borderBottom: '1px solid rgba(214,40,40,0.2)', padding: '2.5rem 1.5rem' }}>
-        <div style={{ maxWidth: 960, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '2rem', textAlign: 'center' }}>
-          {stats.map((s, i) => (
-            <ScrollReveal key={s.label} delay={i * 0.1}>
-              <div style={{ fontSize: 28 }}>{s.icon}</div>
-              <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 900, fontSize: '2.5rem', color: '#FFD700', lineHeight: 1.1 }}>
-                <AnimatedCounter end={s.value} suffix={s.suffix} />
-              </div>
-              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginTop: 4 }}>{s.label}</div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ── QUICK LINKS ── */}
-      <section className="section-padding" style={{ maxWidth: 1280, margin: '0 auto', padding: '4rem 1.5rem' }}>
-        <ScrollReveal>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 className="section-title">Navigate the Council</h2>
-            <p className="section-subtitle">Everything you need, one click away</p>
-          </div>
-        </ScrollReveal>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
-          {quickLinks.map((link, i) => (
-            <ScrollReveal key={link.to} delay={i * 0.1}>
-              <Link to={link.to} style={{ textDecoration: 'none' }}>
-                <SpotlightCard className="p-6 h-full">
-                  <div style={{
-                    width: 48, height: 48, borderRadius: 14,
-                    background: `linear-gradient(135deg, ${link.color.replace('from-', '').replace(' to-', ', ')})`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem',
-                  }}>
-                    <link.icon size={22} style={{ color: '#fff' }} />
-                  </div>
-                  <h3 style={{ color: '#fff', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: '1.1rem', marginBottom: 6 }}>{link.label}</h3>
-                  <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.875rem', lineHeight: 1.5 }}>{link.desc}</p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#D62828', fontSize: '0.8rem', fontWeight: 600, marginTop: '1rem' }}>
-                    Explore <ChevronRight size={14} />
-                  </div>
-                </SpotlightCard>
-              </Link>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ── UPCOMING EVENTS ── */}
-      {upcomingEvents.length > 0 && (
-        <section className="section-padding" style={{ maxWidth: 1280, margin: '0 auto', padding: '4rem 1.5rem' }}>
-          <ScrollReveal>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: 12 }}>
-              <div>
-                <div className="badge badge-red" style={{ marginBottom: 8 }}>📅 Upcoming</div>
-                <h2 className="section-title" style={{ margin: 0 }}>What's Coming</h2>
-              </div>
-              <Link to="/events" style={{ textDecoration: 'none' }}>
-                <motion.span
-                  whileHover={{ x: 4 }}
-                  style={{ color: '#D62828', fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}
-                >
-                  All Events <ArrowRight size={14} />
-                </motion.span>
-              </Link>
-            </div>
-          </ScrollReveal>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
-            {upcomingEvents.map((event, i) => (
-              <ScrollReveal key={event.id} delay={i * 0.12}>
-                <SpotlightCard className="p-6">
-                  <div style={{ display: 'flex', gap: 8, marginBottom: '0.875rem', flexWrap: 'wrap' }}>
-                    {event.tags?.slice(0, 2).map((tag) => (
-                      <span key={tag} className="badge badge-gold">{tag}</span>
-                    ))}
-                  </div>
-                  <h3 style={{ color: '#fff', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: '1.15rem', marginBottom: 8, lineHeight: 1.35 }}>{event.title}</h3>
-                  <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: '1rem' }}>
-                    {event.description?.slice(0, 100)}…
-                  </p>
-                  <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <Calendar size={13} />
-                    {event.date} · {event.venue}
-                  </div>
-                </SpotlightCard>
-              </ScrollReveal>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ── CLUBS LOGO SHOWCASE ── */}
-      <section className="section-padding" style={{ maxWidth: 1280, margin: '0 auto', padding: '4rem 1.5rem' }}>
-        <ScrollReveal>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <div className="badge badge-gold" style={{ marginBottom: 8 }}>🏛️ Student Clubs</div>
-            <h2 className="section-title">Our Clubs & Forums</h2>
-            <p className="section-subtitle">23+ active clubs across arts, tech, sports & culture</p>
-          </div>
-        </ScrollReveal>
-
-        <div
-          className="clubs-logo-grid"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '0.75rem',
-            justifyContent: 'center',
-          }}
-        >
-          {clubNames.map((name, i) => (
-            <Link key={name} to="/clubs" style={{ textDecoration: 'none' }}>
-              <motion.div
-                className="club-logo-item glass-card"
-                whileHover={{ scale: 1.08, y: -4, borderColor: 'rgba(214,40,40,0.5)' }}
-                style={{
-                  padding: '8px 18px',
-                  fontSize: '0.8rem',
-                  color: 'rgba(255,255,255,0.7)',
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'color 0.2s',
-                }}
-                onHoverStart={(e) => {
-                  e.currentTarget.style.color = '#FFD700';
-                }}
-                onHoverEnd={(e) => {
-                  e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
-                }}
-              >
-                {name}
-              </motion.div>
-            </Link>
-          ))}
-        </div>
-
-        <ScrollReveal delay={0.3}>
-          <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-            <Link to="/clubs">
-              <MagneticButton className="btn-primary" style={{ fontSize: '0.9rem', padding: '10px 24px', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                Explore All Clubs <ArrowRight size={15} />
-              </MagneticButton>
-            </Link>
-          </div>
-        </ScrollReveal>
-      </section>
-
-      {/* ── INSTAGRAM CTA ── */}
-      <section style={{ padding: '4rem 1.5rem', position: 'relative', overflow: 'hidden' }}>
-        <div style={{
-          maxWidth: 700,
-          margin: '0 auto',
-          textAlign: 'center',
-          position: 'relative',
-          zIndex: 2,
-        }}>
-          {/* Floating decorative orbs */}
+      {/* ── [2] STATS BAR ── */}
+      <section className="relative bg-[#D62828]/10 border-y border-[#D62828]/20 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
           {[
-            { color: 'rgba(214,40,40,0.2)', x: -100, y: -50, size: 300, delay: 0 },
-            { color: 'rgba(255,215,0,0.12)', x: 200, y: 80, size: 250, delay: 2 },
-          ].map((orb, i) => (
-            <motion.div
-              key={i}
-              style={{
-                position: 'absolute',
-                left: `calc(50% + ${orb.x}px)`,
-                top: `calc(50% + ${orb.y}px)`,
-                width: orb.size,
-                height: orb.size,
-                transform: 'translate(-50%, -50%)',
-                background: `radial-gradient(circle, ${orb.color} 0%, transparent 70%)`,
-                filter: 'blur(40px)',
-                pointerEvents: 'none',
-              }}
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 6, delay: orb.delay, repeat: Infinity }}
-            />
+            { label: 'Active Clubs', end: 23, suffix: '+' },
+            { label: 'Events / Year', end: 50, suffix: '+' },
+            { label: 'Students', end: 8000, suffix: '+' },
+            { label: 'Council Members', end: 40, suffix: '' },
+          ].map((stat, i) => (
+            <ScrollReveal key={stat.label} delay={i * 0.1} direction="up" className="flex flex-col items-center">
+              <div className="text-[3rem] font-black text-[#FFD700] leading-none mb-2 font-outfit">
+                <AnimatedCounter end={stat.end} suffix={stat.suffix} />
+              </div>
+              <div className="text-white/50 text-sm font-semibold tracking-wider uppercase">{stat.label}</div>
+            </ScrollReveal>
           ))}
-
-          <ScrollReveal>
-            <FloatingObject floatY={12} duration={6}>
-              <div style={{ fontSize: 56, marginBottom: '1rem' }}>📸</div>
-            </FloatingObject>
-            <h2 className="section-title">Stay in the Loop</h2>
-            <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '2rem', fontSize: '1rem' }}>
-              Follow REVA Student Council on Instagram for live updates, event highlights, and campus stories.
-            </p>
-            <a
-              href={councilInfo.instagram}
-              target="_blank"
-              rel="noreferrer"
-              style={{ textDecoration: 'none' }}
-            >
-              <MagneticButton
-                style={{
-                  padding: '14px 32px',
-                  background: 'linear-gradient(135deg, #E1306C, #833AB4, #405DE6)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 14,
-                  fontWeight: 700,
-                  fontSize: '1rem',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 10,
-                }}
-              >
-                <Star size={16} /> Follow @reva_studentcouncil
-              </MagneticButton>
-            </a>
-          </ScrollReveal>
         </div>
       </section>
 
-    </div>
+      {/* ── [3] QUICK LINKS GRID ── */}
+      <section className="section-padding max-w-7xl mx-auto">
+        <ScrollReveal>
+          <div className="text-center mb-16">
+            <h2 className="section-title">Navigate Campus</h2>
+            <p className="section-subtitle">Everything happening at REVA, organized for you</p>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { icon: Calendar, title: "Events", desc: "View upcoming fests, hackathons & talks", to: "/events", color: "from-red-500 to-rose-700" },
+            { icon: Users, title: "Clubs", desc: "Join technical, cultural & sports groups", to: "/clubs", color: "from-[#FFD700] to-orange-500" },
+            { icon: ImageIcon, title: "Gallery", desc: "Relive the best memories from campus", to: "/gallery", color: "from-purple-500 to-indigo-700" },
+            { icon: MessageSquare, title: "Complaint Box", desc: "Share concerns directly with the council", to: "/complaint", color: "from-teal-400 to-cyan-600" }
+          ].map((item, i) => (
+            <ScrollReveal key={item.title} delay={i * 0.1}>
+              <Link to={item.to} className="block h-full outline-none">
+                <SpotlightCard className="h-full p-6 flex flex-col items-start gap-4 flex-1">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg`}>
+                    <item.icon size={22} className="text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-outfit font-bold text-xl text-white mb-2">{item.title}</h3>
+                    <p className="text-white/50 text-sm leading-relaxed mb-4">{item.desc}</p>
+                  </div>
+                  <div className="mt-auto font-semibold text-[#D62828] text-sm flex items-center gap-1 group-hover/card:text-[#FFD700] transition-colors">
+                    Explore <ArrowRight size={14} className="group-hover/card:translate-x-1 transition-transform" />
+                  </div>
+                </SpotlightCard>
+              </Link>
+            </ScrollReveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ── [4] UPCOMING EVENTS ── */}
+      <section className="section-padding max-w-7xl mx-auto border-t border-white/5">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <ScrollReveal direction="left">
+            <div className="badge badge-red mb-3">📅 Upcoming</div>
+            <h2 className="section-title !mb-0">What's Next</h2>
+          </ScrollReveal>
+          <ScrollReveal direction="right">
+            <Link to="/events" className="text-[#D62828] font-semibold text-sm hover:text-[#FFD700] flex items-center gap-2 transition-colors">
+              View All Events <ArrowRight size={16} />
+            </Link>
+          </ScrollReveal>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {upcomingEvents.map((ev, i) => (
+            <ScrollReveal key={ev.id} delay={i * 0.1}>
+              <SpotlightCard className="p-6 h-full flex flex-col">
+                <div className="flex gap-2 mb-4">
+                  {ev.tags.map(t => <span key={t} className="badge badge-gold !text-[10px]">{t}</span>)}
+                </div>
+                <h3 className="text-xl font-bold font-outfit text-white mb-3 leading-tight">{ev.title}</h3>
+                <p className="text-white/40 text-sm mb-6 flex-grow">{ev.description}</p>
+                <div className="bg-[#0B0F1A] rounded-xl p-3 border border-white/5 flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-[#D62828] text-xs font-semibold">
+                    <Calendar size={14} /> {ev.date}
+                  </div>
+                  <div className="text-white/30 text-[11px] truncate">
+                    📍 {ev.venue}
+                  </div>
+                </div>
+              </SpotlightCard>
+            </ScrollReveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ── [5] HORIZONTAL SCROLL CLUBS ── */}
+      <section className="relative py-24 mb-32 hidden md:block border-y border-white/5 bg-[#111827]/30">
+        <div className="max-w-7xl mx-auto px-4 mb-20 text-center">
+          <h2 className="section-title">23+ Active Clubs</h2>
+          <p className="section-subtitle">Find your people, build your passion.</p>
+        </div>
+        <HorizontalScroll>
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="horizontal-panel w-screen max-w-5xl h-64 flex items-center justify-center flex-shrink-0 px-10">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
+                {clubs.slice(i * 4, i * 4 + 4).map((club, j) => (
+                  <FloatingObject key={club?.name || j} floatY={12} delay={(i*4+j) * 0.1}>
+                    <div className="glass-card p-6 flex items-center justify-center h-32 rounded-2xl border-white/10 text-center">
+                      <span className="font-outfit font-bold text-white/80">{club?.name || 'RSC Club'}</span>
+                    </div>
+                  </FloatingObject>
+                ))}
+              </div>
+            </div>
+          ))}
+        </HorizontalScroll>
+        <div className="flex justify-center mt-8 relative z-10">
+          <Link to="/clubs">
+            <button className="btn-primary px-8 py-3">View All Clubs Directory</button>
+          </Link>
+        </div>
+      </section>
+
+      {/* ── [6] MISSION STATEMENT ── */}
+      <section className="py-32 px-4 relative flex items-center justify-center text-center overflow-hidden">
+        <GlowOrb color="rgba(214,40,40,0.15)" size={600} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
+        <div className="max-w-4xl relative z-10">
+          <TextReveal 
+            text="We exist to amplify every student's voice, build a thriving campus community, and turn ideas into unforgettable experiences."
+            className="font-outfit font-black text-[clamp(2.5rem,6vw,4.5rem)] leading-tight text-white/90"
+          />
+        </div>
+      </section>
+
+      {/* ── [7] GALLERY PREVIEW ── */}
+      <section className="section-padding max-w-7xl mx-auto">
+        <ScrollReveal className="text-center mb-16">
+          <h2 className="section-title">Campus Life in Color</h2>
+          <p className="section-subtitle">Moments we've built together.</p>
+        </ScrollReveal>
+
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+          {galleryPreview.map((item, i) => (
+            <ScrollReveal key={item.id} delay={i * 0.05} direction="up" className="break-inside-avoid">
+              <div className={`relative w-full rounded-2xl overflow-hidden aspect-[${i % 2 === 0 ? '4/3' : '3/4'}] bg-gradient-to-br ${item.color} p-8 flex items-center justify-center group`}>
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-500" />
+                <span className="relative z-10 font-outfit font-black text-white/40 text-2xl rotate-[-10deg] scale-150 transform-gpu group-hover:scale-100 group-hover:rotate-0 group-hover:text-white transition-all duration-500">
+                  {item.text}
+                </span>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+
+        <div className="flex justify-center mt-12">
+          <Link to="/gallery">
+            <MagneticButton className="btn-outline px-8 py-3">View Full Gallery</MagneticButton>
+          </Link>
+        </div>
+      </section>
+
+      {/* ── [8] AI CHAT TEASER ── */}
+      <section className="section-padding max-w-5xl mx-auto">
+        <SpotlightCard className="p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 border-[#FFD700]/10 bg-gradient-to-br from-[#0B0F1A] to-[#1a1100]">
+          <div className="md:w-1/2 text-center md:text-left">
+            <div className="badge badge-gold mb-4">✨ New Feature</div>
+            <h2 className="font-outfit font-black text-3xl md:text-4xl text-white mb-4 leading-tight">
+              Have a question about campus?
+            </h2>
+            <p className="text-white/50 mb-8 leading-relaxed">
+              Skip the long lines. Ask our smart AI Assistant about clubs, events, faculty rooms, or how to register a complaint.
+            </p>
+            <Link to="/ai-chat">
+              <MagneticButton className="btn-primary px-6 py-3">
+                Chat with RSC AI
+              </MagneticButton>
+            </Link>
+          </div>
+          <div className="md:w-1/2 relative h-64 w-full">
+            <FloatingObject floatY={10} duration={4} className="absolute right-10 top-0 glass-card p-4 rounded-b-none rounded-2xl px-6 bg-[#D62828]/20 border-[#D62828]/30">
+              <span className="text-white text-sm">When is REVAMP? 🤩</span>
+            </FloatingObject>
+            <FloatingObject floatY={8} duration={3.5} delay={1} className="absolute left-0 bottom-10 glass-card p-4 rounded-t-none rounded-2xl px-6 bg-[#FFD700]/10 border-[#FFD700]/20">
+              <span className="text-white/80 text-sm">REVAMP is perfectly timed for March 15th! Get your squad ready. 🎉</span>
+            </FloatingObject>
+          </div>
+        </SpotlightCard>
+      </section>
+
+      {/* ── [9] INSTAGRAM CTA ── */}
+      <section className="py-32 relative flex flex-col items-center justify-center text-center overflow-hidden border-t border-white/5">
+        <GlowOrb color="rgba(225,48,108,0.15)" size={500} className="absolute left-1/4 top-0" />
+        <GlowOrb color="rgba(64,93,230,0.15)" size={400} className="absolute right-1/4 bottom-0" />
+        
+        <div className="relative z-10 max-w-2xl px-4 flex flex-col items-center">
+          <FloatingObject floatY={15} duration={5} className="text-6xl mb-8">📸</FloatingObject>
+          <h2 className="section-title mb-6">Stay in the Loop</h2>
+          <p className="section-subtitle mb-10">Follow us on Instagram for live campus updates, event reels, and flash announcements.</p>
+          <a href={councilInfo.instagram} target="_blank" rel="noreferrer">
+            <MagneticButton className="px-8 py-4 rounded-2xl font-outfit font-bold text-white shadow-[0_10px_30px_rgba(225,48,108,0.3)] transition-transform hover:scale-105 flex items-center gap-3"
+              style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}>
+              <Star size={18} fill="currentColor" /> Follow @reva_studentcouncil
+            </MagneticButton>
+          </a>
+        </div>
+      </section>
+
+    </motion.div>
   );
 }

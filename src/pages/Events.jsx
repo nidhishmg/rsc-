@@ -1,150 +1,121 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, MapPin, Clock, ExternalLink, Filter } from 'lucide-react';
-import { getData, setData, events as seedEvents } from '../data/mockData';
-
-const tabs = [
-  { key: 'current', label: 'Current Events', emoji: '🔴', desc: 'Happening right now' },
-  { key: 'upcoming', label: 'Upcoming Events', emoji: '🗓️', desc: 'Coming soon' },
-  { key: 'past', label: 'Past Events', emoji: '📷', desc: 'Memories & highlights' },
-];
-
-const tagColors = {
-  Cultural: 'badge-red',
-  Music: 'badge-red',
-  Dance: 'badge-red',
-  Tech: 'badge-blue',
-  Hackathon: 'badge-blue',
-  Coding: 'badge-blue',
-  Sports: 'badge-green',
-  Competition: 'badge-green',
-  Art: 'badge-gold',
-  Photography: 'badge-gold',
-  Workshop: 'badge-gold',
-  Leadership: 'badge-gold',
-  Social: 'badge-blue',
-};
-
-function EventCard({ event, type }) {
-  return (
-    <div className="glass-card overflow-hidden card-hover group">
-      {/* Color banner */}
-      <div className={`h-2 w-full ${type === 'current' ? 'bg-reva-red' : type === 'upcoming' ? 'bg-reva-gold' : 'bg-white/20'}`} />
-      <div className="p-6">
-        <div className="flex flex-wrap gap-2 mb-3">
-          {event.tags?.map(tag => (
-            <span key={tag} className={tagColors[tag] || 'badge-blue'}>{tag}</span>
-          ))}
-          {type === 'current' && (
-            <span className="badge bg-reva-red text-white animate-pulse">● Live</span>
-          )}
-        </div>
-        <h3 className="font-outfit font-bold text-xl text-white mb-2 group-hover:text-reva-gold transition-colors leading-snug">
-          {event.title}
-        </h3>
-        <p className="text-white/50 text-sm mb-5 line-clamp-3 leading-relaxed">{event.description}</p>
-
-        <div className="space-y-2 text-sm">
-          <div className="flex items-center gap-2 text-white/50">
-            <Calendar size={14} className="text-reva-red shrink-0" />
-            <span>{event.date}{event.endDate && event.endDate !== event.date ? ` – ${event.endDate}` : ''}</span>
-          </div>
-          {event.time && (
-            <div className="flex items-center gap-2 text-white/50">
-              <Clock size={14} className="text-reva-gold shrink-0" />
-              <span>{event.time}</span>
-            </div>
-          )}
-          <div className="flex items-center gap-2 text-white/50">
-            <MapPin size={14} className="text-blue-400 shrink-0" />
-            <span className="line-clamp-1">{event.venue}</span>
-          </div>
-        </div>
-
-        {event.highlights && (
-          <div className="mt-4 p-3 bg-reva-gold/10 border border-reva-gold/20 rounded-xl">
-            <p className="text-reva-gold text-xs font-semibold mb-1">🏆 Highlights</p>
-            <p className="text-white/70 text-xs leading-relaxed">{event.highlights}</p>
-          </div>
-        )}
-
-        {event.registrationLink && type !== 'past' && (
-          <a
-            href={event.registrationLink}
-            className="mt-5 inline-flex items-center gap-2 btn-primary text-sm py-2.5 w-full justify-center"
-          >
-            Register Now <ExternalLink size={14} />
-          </a>
-        )}
-      </div>
-    </div>
-  );
-}
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { events } from '../data/mockData';
+import AuroraBackground from '../components/ui/AuroraBackground';
+import SplitText from '../components/ui/SplitText';
+import SpotlightCard from '../components/ui/SpotlightCard';
+import { Calendar, MapPin, Search } from 'lucide-react';
 
 export default function Events() {
-  const [activeTab, setActiveTab] = useState('current');
-  const [eventList, setEventList] = useState([]);
+  const [filter, setFilter] = useState('All');
+  
+  const tabs = ['All', 'Upcoming', 'Past', 'Technical', 'Cultural', 'Sports'];
 
-  useEffect(() => {
-    const stored = getData('EVENTS');
-    setEventList(stored || seedEvents);
-  }, []);
-
-  const filtered = eventList.filter(e => e.category === activeTab);
+  const filteredEvents = events.filter(ev => {
+    if (filter === 'All') return true;
+    if (filter === 'Upcoming') return ev.category === 'upcoming';
+    if (filter === 'Past') return ev.category === 'past';
+    return ev.tags.includes(filter);
+  });
 
   return (
-    <div className="page-container page-enter">
-      {/* Header */}
-      <div className="hero-gradient border-b border-white/10 pt-28 pb-16 px-4 text-center">
-        <div className="inline-flex items-center gap-2 bg-reva-red/15 border border-reva-red/30 rounded-full px-5 py-2 mb-6">
-          <Calendar size={14} className="text-reva-red" />
-          <span className="text-reva-red text-sm font-semibold">Events at REVA</span>
+    <motion.div 
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="page-container min-h-screen pb-32"
+    >
+      {/* Hero Strip */}
+      <section className="relative pt-32 pb-20 px-4 text-center overflow-hidden border-b border-white/5">
+        <AuroraBackground />
+        <div className="relative z-10">
+          <div className="badge badge-gold mb-4">🎉 What's Happening</div>
+          <h1 className="font-outfit font-black text-5xl md:text-7xl text-white mb-6">
+            <SplitText text="Campus Events" />
+          </h1>
+          <p className="text-white/50 max-w-2xl mx-auto text-lg">
+            From technical hackathons to cultural extravaganzas. Stay updated with everything happening at REVA.
+          </p>
         </div>
-        <h1 className="section-title text-5xl md:text-6xl mb-3">Campus Events</h1>
-        <p className="section-subtitle max-w-xl mx-auto">
-          Stay up-to-date with everything happening on campus — from cultural fests to hackathons
-        </p>
-      </div>
+      </section>
 
-      <div className="section-padding max-w-7xl mx-auto">
-        {/* Tab Switcher */}
-        <div className="flex flex-wrap gap-3 mb-10 justify-center">
+      {/* Filter Tabs */}
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        <div className="flex flex-wrap justify-center gap-2 mb-12">
           {tabs.map(tab => (
             <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-200 ${
-                activeTab === tab.key
-                  ? 'bg-reva-red text-white shadow-lg shadow-reva-red/30 scale-105'
-                  : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10'
-              }`}
+              key={tab}
+              onClick={() => setFilter(tab)}
+              className={`relative px-6 py-2.5 rounded-full font-outfit text-sm font-semibold transition-colors outline-none ${filter === tab ? 'text-[#FFD700]' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
             >
-              <span>{tab.emoji}</span>
-              {tab.label}
-              <span className="ml-1 text-xs opacity-60">({eventList.filter(e => e.category === tab.key).length})</span>
+              {filter === tab && (
+                <motion.div
+                  layoutId="event-tab-bg"
+                  className="absolute inset-0 bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-full"
+                  initial={false}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">{tab}</span>
             </button>
           ))}
         </div>
 
-        {/* Tab description */}
-        <div className="text-center mb-8">
-          <p className="text-white/40 text-sm">{tabs.find(t => t.key === activeTab)?.desc}</p>
-        </div>
-
         {/* Events Grid */}
-        {filtered.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">📭</div>
-            <h3 className="font-outfit font-bold text-2xl text-white/50 mb-2">No events found</h3>
-            <p className="text-white/30">Check back soon for updates in this category.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map(event => (
-              <EventCard key={event.id} event={event} type={activeTab} />
-            ))}
-          </div>
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <AnimatePresence mode="popLayout">
+            {filteredEvents.map(ev => {
+              const isPast = ev.category === 'past';
+              return (
+                <motion.div
+                  key={ev.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <SpotlightCard className={`h-full p-6 flex flex-col ${isPast ? 'grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300' : ''}`}>
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex gap-2 flex-wrap">
+                        {ev.tags.map(t => <span key={t} className="badge badge-red !text-[10px]">{t}</span>)}
+                      </div>
+                      {isPast && <span className="bg-white/10 text-white/50 text-[10px] uppercase font-bold px-2 py-1 rounded">Archived</span>}
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold font-outfit text-white mb-3">{ev.title}</h3>
+                    <p className="text-white/50 text-sm leading-relaxed mb-6 flex-grow">{ev.description}</p>
+                    
+                    <div className="space-y-3 mb-6 bg-black/20 p-4 rounded-xl border border-white/5">
+                      <div className="flex items-center gap-3 text-sm font-medium text-white/80">
+                        <Calendar size={16} className={isPast ? "text-white/50" : "text-[#FFD700]"} /> {ev.date}
+                      </div>
+                      <div className="flex items-center gap-3 text-sm font-medium text-white/80">
+                        <MapPin size={16} className={isPast ? "text-white/50" : "text-[#D62828]"} /> {ev.venue}
+                      </div>
+                    </div>
+
+                    <button className={`w-full py-3 rounded-xl font-bold text-sm transition-colors ${isPast ? 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white' : 'bg-[#D62828] text-white hover:bg-red-700'}`}>
+                      {isPast ? 'View Gallery' : 'Learn More / Register'}
+                    </button>
+                  </SpotlightCard>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </motion.div>
+
+        {filteredEvents.length === 0 && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            className="py-20 flex flex-col items-center justify-center text-center"
+          >
+            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center text-white/20 mb-4">
+              <Search size={32} />
+            </div>
+            <h3 className="font-outfit font-bold text-2xl text-white mb-2">No events found</h3>
+            <p className="text-white/40">Check back later or try a different filter category.</p>
+          </motion.div>
         )}
-      </div>
-    </div>
+      </section>
+    </motion.div>
   );
 }

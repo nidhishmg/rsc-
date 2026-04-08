@@ -1,228 +1,185 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
-import { initializeData } from './data/mockData';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 
-// Pages
+import Navbar from './components/ui/Navbar';
+import Footer from './components/ui/Footer';
+
 import Home from './pages/Home';
 import Events from './pages/Events';
 import Clubs from './pages/Clubs';
-import Members from './pages/Members';
 import Gallery from './pages/Gallery';
-import ComplaintBox from './pages/ComplaintBox';
-import AdminLogin from './pages/AdminLogin';
-import AdminDashboard from './pages/AdminDashboard';
+import Complaint from './pages/Complaint';
+import AiChat from './pages/AiChat';
+import Council from './pages/Council';
 
-// Navbar Component
-function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+import SplitText from './components/ui/SplitText';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
+function CustomCursor() {
+  const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const updateMouseObj = (e) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleHoverStart = () => setIsHovered(true);
+    const handleHoverEnd = () => setIsHovered(false);
+
+    window.addEventListener('mousemove', updateMouseObj);
+    
+    // Add hover listeners to interactive elements
+    const elements = document.querySelectorAll('a, button, input, select, textarea, .cursor-pointer');
+    elements.forEach(el => {
+      el.addEventListener('mouseenter', handleHoverStart);
+      el.addEventListener('mouseleave', handleHoverEnd);
+    });
+
+    return () => {
+      window.removeEventListener('mousemove', updateMouseObj);
+      elements.forEach(el => {
+        el.removeEventListener('mouseenter', handleHoverStart);
+        el.removeEventListener('mouseleave', handleHoverEnd);
+      });
+    };
+  }, []);
+
+  return (
+    <>
+      <motion.div
+        className="fixed top-0 left-0 w-2 h-2 bg-[#D62828] rounded-full pointer-events-none z-[9999]"
+        animate={{ x: mousePos.x - 4, y: mousePos.y - 4 }}
+        transition={{ type: "tween", ease: "linear", duration: 0 }}
+      />
+      <motion.div
+        className="fixed top-0 left-0 w-8 h-8 border border-[#FFD700]/50 rounded-full pointer-events-none z-[9998]"
+        animate={{ 
+          x: mousePos.x - 16, 
+          y: mousePos.y - 16,
+          scale: isHovered ? 1.5 : 1,
+          backgroundColor: isHovered ? 'rgba(214,40,40,0.1)' : 'transparent'
+        }}
+        transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
+      />
+    </>
+  );
+}
+
+function AnimatedRoutes() {
   const location = useLocation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const isAdmin = location.pathname.startsWith('/admin');
-  const isLoggedIn = sessionStorage.getItem('adminSession') === 'true';
-
-  const navLinks = [
-    { to: '/', label: 'Home' },
-    { to: '/events', label: 'Events' },
-    { to: '/clubs', label: 'Clubs' },
-    { to: '/members', label: 'Members' },
-    { to: '/gallery', label: 'Gallery' },
-    { to: '/complaint', label: 'Complaint Box' },
-  ];
-
-  const isActive = (path) => {
-    if (path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(path);
-  };
-
-  const handleLogout = () => {
-    sessionStorage.removeItem('adminSession');
-    navigate('/');
-  };
-
+  
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled ? 'bg-reva-navy/95 backdrop-blur-md shadow-lg shadow-black/20' : 'bg-transparent'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <div className="flex items-center justify-between h-16 md:h-18">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-              <img src="/RevaStudentCouncil.png" alt="REVA Student Council Logo" className="w-full h-full object-contain" />
-            </div>
-            <div>
-              <div className="font-outfit font-bold text-white text-sm leading-tight">REVA Student</div>
-              <div className="font-outfit font-bold text-reva-gold text-xs leading-tight">Council</div>
-            </div>
-          </Link>
-
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
-            {!isAdmin && navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  isActive(link.to)
-                    ? 'text-reva-gold bg-reva-gold/10'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* CTA Buttons */}
-          <div className="hidden md:flex items-center gap-3">
-            {isLoggedIn ? (
-              <>
-                <Link to="/admin" className="text-sm text-white/70 hover:text-white transition-colors">Dashboard</Link>
-                <button onClick={handleLogout} className="btn-outline text-sm py-2 px-4">Logout</button>
-              </>
-            ) : (
-              <Link to="/admin-login" className="btn-primary text-sm py-2 px-4">Admin Login</Link>
-            )}
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <div className={`md:hidden transition-all duration-300 overflow-hidden ${isOpen ? 'max-h-screen' : 'max-h-0'}`}>
-        <div className="bg-reva-navy/98 backdrop-blur-md border-t border-white/10 px-4 py-4 space-y-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              onClick={() => setIsOpen(false)}
-              className={`block px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                isActive(link.to)
-                  ? 'text-reva-gold bg-reva-gold/10'
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <div className="pt-2 border-t border-white/10">
-            {isLoggedIn ? (
-              <button onClick={handleLogout} className="w-full btn-outline text-sm py-2.5">Logout</button>
-            ) : (
-              <Link to="/admin-login" onClick={() => setIsOpen(false)} className="block w-full text-center btn-primary text-sm py-2.5">
-                Admin Login
-              </Link>
-            )}
-          </div>
-        </div>
-      </div>
-    </nav>
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+        <Route path="/events" element={<PageWrapper><Events /></PageWrapper>} />
+        <Route path="/clubs" element={<PageWrapper><Clubs /></PageWrapper>} />
+        <Route path="/gallery" element={<PageWrapper><Gallery /></PageWrapper>} />
+        <Route path="/complaint" element={<PageWrapper><Complaint /></PageWrapper>} />
+        <Route path="/ai-chat" element={<PageWrapper><AiChat /></PageWrapper>} />
+        <Route path="/council" element={<PageWrapper><Council /></PageWrapper>} />
+      </Routes>
+    </AnimatePresence>
   );
 }
 
-// Footer Component
-function Footer() {
+function PageWrapper({ children }) {
   return (
-    <footer className="bg-reva-navy border-t border-white/10 mt-16">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 flex items-center justify-center">
-                <img src="/RevaStudentCouncil.png" alt="REVA Student Council Logo" className="w-full h-full object-contain" />
-              </div>
-              <div>
-                <div className="font-outfit font-bold text-white text-sm">REVA Student Council</div>
-                <div className="text-reva-gold text-xs">Your Voice. Your Campus.</div>
-              </div>
-            </div>
-            <p className="text-white/50 text-sm leading-relaxed">
-              The official student governing body of REVA University, dedicated to student welfare and campus enrichment.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-outfit font-semibold text-white mb-4">Quick Links</h4>
-            <div className="space-y-2">
-              {[['/', 'Home'], ['/events', 'Events'], ['/clubs', 'Clubs & Forums'], ['/members', 'Members'], ['/gallery', 'Gallery'], ['/complaint', 'Complaint Box']].map(([to, label]) => (
-                <Link key={to} to={to} className="block text-white/50 hover:text-reva-gold text-sm transition-colors duration-200">{label}</Link>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h4 className="font-outfit font-semibold text-white mb-4">Contact</h4>
-            <div className="space-y-2 text-sm text-white/50">
-              <p>📧 studentcouncil@reva.edu.in</p>
-              <p>📍 REVA University, Bengaluru</p>
-              <p>🕐 Mon–Fri: 9:00 AM – 5:00 PM</p>
-              <div className="pt-3">
-                <a href="https://www.instagram.com/reva_studentcouncil/" target="_blank" rel="noreferrer"
-                   className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 to-purple-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:scale-105 transition-transform duration-200">
-                  📸 Follow on Instagram
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="divider mt-8" />
-        <div className="flex flex-col md:flex-row justify-between items-center gap-2">
-          <p className="text-white/30 text-xs">© 2025 REVA University Student Council. All rights reserved.</p>
-          <p className="text-white/30 text-xs">Built with ❤️ by the REVA Student Council</p>
-        </div>
-      </div>
-    </footer>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+    >
+      {children}
+    </motion.div>
   );
 }
 
-// Protected Route
-function ProtectedRoute({ children }) {
-  const navigate = useNavigate();
-  const isLoggedIn = sessionStorage.getItem('adminSession') === 'true';
+function Preloader({ onComplete }) {
   useEffect(() => {
-    if (!isLoggedIn) navigate('/admin-login');
-  }, [isLoggedIn, navigate]);
-  return isLoggedIn ? children : null;
+    const timer = setTimeout(() => onComplete(), 2800);
+    return () => clearTimeout(timer);
+  }, [onComplete]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0, y: '-100vh' }}
+      transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+      className="fixed inset-0 z-[10000] bg-[#0B0F1A] flex flex-col items-center justify-center pointer-events-none"
+    >
+      <motion.div 
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.5, ease: "backOut" }}
+        className="w-24 h-24 mb-6 flex items-center justify-center"
+      >
+        <img src="/RevaStudentCouncil.png" alt="Logo Loading" className="w-full h-full object-contain" />
+      </motion.div>
+      <div className="font-outfit font-black tracking-[0.2em] text-white/80 text-sm mb-8">
+        <SplitText text="REVA STUDENT COUNCIL" delay={0.3} staggerDelay={0.05} />
+      </div>
+      
+      {/* Progress Line */}
+      <div className="w-64 h-1 bg-white/10 rounded-full overflow-hidden">
+        <motion.div 
+          initial={{ x: '-100%' }}
+          animate={{ x: '0%' }}
+          transition={{ duration: 2, ease: "easeInOut", delay: 0.5 }}
+          className="w-full h-full bg-gradient-to-r from-[#D62828] to-[#FFD700]"
+        />
+      </div>
+    </motion.div>
+  );
 }
 
-// App
 export default function App() {
-  useEffect(() => {
-    initializeData();
-  }, []);
+  const [loading, setLoading] = useState(true);
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   return (
-    <Router>
-      <div className="min-h-screen bg-reva-navy">
-        <Navbar />
-        <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/clubs" element={<Clubs />} />
-            <Route path="/members" element={<Members />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/complaint" element={<ComplaintBox />} />
-            <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <BrowserRouter>
+      {/* Noise Overlay */}
+      <div 
+        className="fixed inset-0 pointer-events-none z-[9997] opacity-[0.03]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+        }}
+      />
+
+      <CustomCursor />
+      
+      {/* Scroll Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 z-[9999] origin-left bg-gradient-to-r from-[#D62828] to-[#FFD700]"
+        style={{ scaleX }}
+      />
+
+      <AnimatePresence mode="wait">
+        {loading ? (
+          <Preloader key="preloader" onComplete={() => setLoading(false)} />
+        ) : (
+          <motion.div key="main-app" className="relative z-10 hidden-scrollbar" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+            <ScrollToTop />
+            <Navbar />
+            <main>
+              <AnimatedRoutes />
+            </main>
+            <Footer />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </BrowserRouter>
   );
 }
