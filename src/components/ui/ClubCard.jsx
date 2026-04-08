@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 export default function ClubCard({ club, onClick }) {
   const [imgError, setImgError] = useState(false);
-  const logoPath = `/LogosClubs/${club.name.toLowerCase().replace(/ /g, '-')}.png`;
+  const logoPath = club.logo;
 
   return (
     <motion.div

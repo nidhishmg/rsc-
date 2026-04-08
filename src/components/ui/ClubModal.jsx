@@ -15,7 +15,7 @@ export default function ClubModal({ club, isOpen, onClose }) {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  const logoPath = club ? `/LogosClubs/${club.name.toLowerCase().replace(/ /g, '-')}.png` : '';
+  const logoPath = club?.logo || '';
 
   if (!isOpen) return null;
 

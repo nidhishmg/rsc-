@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, useMotionValue } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { clubs, events, councilInfo } from '../data/mockData';
+import { events, councilInfo } from '../data/mockData';
+import FeaturedClubs from '../components/FeaturedClubs';
 
 // UI Components
 import AuroraBackground from '../components/ui/AuroraBackground';
@@ -19,64 +20,6 @@ import GlowOrb from '../components/ui/GlowOrb';
 import { ArrowRight, Calendar, Users, Image as ImageIcon, MessageSquare, Star } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
-
-const categoryColors = {
-  Tech: '#3B82F6',
-  Arts: '#8B5CF6',
-  Sports: '#10B981',
-  Cultural: '#F59E0B',
-  Social: '#EF4444',
-  default: '#6B7280'
-};
-
-function TiltCard({ children, club }) {
-
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useTransform(y, [-100, 100], [15, -15]);
-  const rotateY = useTransform(x, [-100, 100], [-15, 15]);
-
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    x.set(e.clientX - rect.left - rect.width / 2);
-    y.set(e.clientY - rect.top - rect.height / 2);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  const color = categoryColors[club?.category] || categoryColors.default;
-
-  return (
-    <motion.div
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, transformPerspective: 800 }}
-      whileHover={{ scale: 1.02 }}
-      className="mb-4"
-    >
-      <SpotlightCard className="p-6 flex flex-col items-start relative overflow-hidden group">
-        <div className="absolute left-0 top-0 bottom-0 w-1 opacity-50 group-hover:opacity-100 transition-opacity" style={{ backgroundColor: color }} />
-        <div 
-          className="w-16 h-16 rounded-full flex items-center justify-center font-outfit font-black text-2xl text-white mb-4 shadow-lg shrink-0 overflow-hidden"
-          style={{ backgroundColor: color }}
-        >
-          {club.logo ? (
-            <img src={club.logo} alt={club.name} className="w-full h-full object-cover" />
-          ) : (
-            club.name.charAt(0)
-          )}
-        </div>
-        <div className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider mb-2" style={{ backgroundColor: `${color}20`, color: color }}>
-          {club.category}
-        </div>
-        <h3 className="font-outfit font-bold text-lg text-white group-hover:text-white transition-colors">{club.name}</h3>
-      </SpotlightCard>
-    </motion.div>
-  );
-}
 
 export default function Home() {
   const heroRef = useRef(null);
@@ -265,45 +208,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── [5] TICKER & MASONRY CLUBS ── */}
-      <section className="relative py-24 border-y border-white/5 bg-[#111827]/30 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 mb-12 text-center">
-          <h2 className="section-title">23+ Active Clubs</h2>
-          <p className="section-subtitle">Find your people, build your passion.</p>
-        </div>
-
-        {/* Part A: Marquee Ticker */}
-        <div className="relative w-full overflow-hidden mb-16 border-y border-white/5 bg-[#0B0F1A]/80 py-4 flex items-center">
-          {/* Double list for seamless loop */}
-          <div className="animate-marquee flex gap-8 px-4 items-center whitespace-nowrap">
-            {[...clubs, ...clubs].map((club, i) => (
-              <React.Fragment key={i}>
-                <span className="text-white/30 hover:text-white/70 font-outfit font-semibold text-sm tracking-wide transition-colors cursor-pointer">
-                  {club.name}
-                </span>
-                {i !== (clubs.length * 2 - 1) && <span className="text-[#D62828] font-bold opacity-50">·</span>}
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-
-        {/* Part B: Masonry Reveal Grid */}
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="columns-2 md:columns-3 lg:columns-4 gap-4">
-            {clubs.map((club, i) => (
-              <ScrollReveal key={club.id} delay={0.04 * (i % 6)} className="break-inside-avoid">
-                <TiltCard club={club} />
-              </ScrollReveal>
-            ))}
-          </div>
-          
-          <div className="flex justify-center mt-12 relative z-10">
-            <Link to="/clubs">
-              <button className="btn-primary px-8 py-3">View All Clubs Directory</button>
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* ── [5] FEATURED CLUBS ── */}
+      <FeaturedClubs />
 
       {/* ── [6] MISSION STATEMENT ── */}
       <section className="py-32 px-4 relative flex items-center justify-center text-center overflow-hidden">
