@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import SpotlightCard from '../components/ui/SpotlightCard';
 import FloatingObject from '../components/ui/FloatingObject';
 import MagneticButton from '../components/ui/MagneticButton';

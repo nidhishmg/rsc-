@@ -108,16 +108,58 @@ export const clubs = [
   { id: 21, name: "Under25", description: "Official chapter of the Under25 networking ecosystem.", category: "Social", logo: null }
 ];
 
-export const councilMembers = [
-  { id: 1, name: "Aarushi Verma", role: "President", department: "School of Computing", avatar: "A" },
-  { id: 2, name: "Rohan Kumar", role: "Vice President", department: "School of Management", avatar: "R" },
-  { id: 3, name: "Priya Gowda", role: "General Secretary", department: "School of ECE", avatar: "P" },
-  { id: 4, name: "Kiran Raj", role: "Cultural Secretary", department: "School of Architecture", avatar: "K" },
-  { id: 5, name: "Neha Singh", role: "Sports Secretary", department: "School of Legal Studies", avatar: "N" },
-  { id: 6, name: "Aditya Mohan", role: "Technical Head", department: "School of CSA", avatar: "A" },
-  { id: 7, name: "Sneha Reddy", role: "Public Relations", department: "School of Arts & Humanities", avatar: "S" },
-  { id: 8, name: "Varun Desai", role: "Treasurer", department: "School of Commerce", avatar: "V" }
-];
+export const councilMembers = {
+  current: [
+    { id: 1,  name: "Sharan M",               role: "President",             department: "School of Mechanical Engineering",    photo: "Sharan M.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 2,  name: "RD Ashrith",             role: "Vice President",        department: "School of Management Studies",        photo: "RD Ashrith.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 3,  name: "Afreen Nuha Khan",       role: "General Secretary",     department: "School of ECE",                       photo: "Afreen Nuha Khan.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 4,  name: "Aditya Kumar",           role: "Joint Secretary",       department: "School of Management Studies",        photo: "Aditya Kumar.jpeg", bio: null, linkedin: null, instagram: null },
+    { id: 5,  name: "Supreeth Gautham R",     role: "Treasurer",             department: "School of Management Studies",        photo: "Supreeth Gautham.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 6,  name: "Pavan HC",               role: "Sports Secretary",      department: "School of CSA",                       photo: "Pavan HC.jpeg", bio: null, linkedin: null, instagram: null },
+    { id: 7,  name: "Prithi Pragya Nath",     role: "Sports Secretary",      department: "School of Management Studies",        photo: "Prithi Pragya Nath.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 8,  name: "Veeksha MS",             role: "Cultural Secretary",    department: "Department of Psychology",            photo: "Veeksha MS.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 9,  name: "Shishir M",              role: "Cultural Secretary",    department: "School of C&IT",                      photo: "Shishir M.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 10, name: "Shivana Gowda R",        role: "NSS & NCC Secretary",   department: "School of Commerce",                  photo: "Shivana Gowda.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 11, name: "Charles S",              role: "Media Team",            department: "School of CSE",                       photo: "Charles S.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 12, name: "Pavan Rao D",            role: "Media Team",            department: "School of ECE",                       photo: "Pavan Rao.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 13, name: "Raghavan A",             role: "Media Team",            department: "School of ECE",                       photo: "Raghavan A.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 14, name: "MG Nidhish",             role: "Media & Design Team",   department: "School of ECE",                       photo: "MG Nidhish.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 15, name: "Sanjay Ramesh",          role: "Technical Team",        department: "School of ECE",                       photo: "Sanjay Ramesh.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 16, name: "Mahima Bandela",         role: "Technical Team",        department: "School of Civil Engineering",         photo: "Mahima B.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 17, name: "Nikhil Kashyap JV",      role: "PR & Marketing",        department: "School of ECE",                       photo: "Nikhil Kashyap.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 18, name: "Nischal Chandrashekhar", role: "PR & Marketing",        department: "School of Mechanical Engineering",    photo: "Nischal Chandrashekhar.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 19, name: "Abin Issac Varghese",    role: "Event Management",      department: "School of Management Studies",        photo: "Abin Issac Varghese.jpeg", bio: null, linkedin: null, instagram: null },
+    { id: 20, name: "Sudarshan CV",           role: "Event Management",      department: "School of CSE",                       photo: "Sudharshan CV.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 21, name: "Rashmi Sambukumar",      role: "Event Management",      department: "School of Performing Arts",           photo: "Rashmi Sambukumar.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 22, name: "Aneri Chhatrala",        role: "Club Coordinator",      department: "School of Management Studies",        photo: "Aneri Chhatrala.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 23, name: "G Bhavani Shankar",      role: "Club Coordinator",      department: "School of Mechanical Engineering",    photo: "G Bhavani Shankar.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 24, name: "Adwaith S",              role: "Club Coordinator",      department: "School of Management Studies",        photo: "Adwaith S.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 25, name: "Keerthana Priya",        role: "Club Coordinator",      department: "School of ECE",                       photo: "Keerthana Priya.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 26, name: "Laxman Patil",           role: "Executive Member",      department: "REVA Business School",               photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 27, name: "Pragathi N",             role: "Executive Member",      department: "School of EEE",                       photo: "Pragathi N.jpeg", bio: null, linkedin: null, instagram: null },
+    { id: 28, name: "Aryan Nayyar",           role: "Executive Member",      department: "School of CSE",                       photo: "Aryan Nayyar.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 29, name: "Nandana Parvathy SS",    role: "Executive Member",      department: "Department of Psychology",            photo: "Nandhana Parvathy.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 30, name: "Purvik A Reddy",         role: "Executive Member",      department: "School of Architecture",              photo: "Purvik A Reddy.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 31, name: "Shrey S Nayak",          role: "Executive Member",      department: "School of Agricultural Engineering",  photo: "Shrey S Naik.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 32, name: "Tejashree R",            role: "Senior Mentor",         department: "School of CSE",                       photo: "Tejashree R.jpeg", bio: null, linkedin: null, instagram: null },
+    { id: 33, name: "Brunda N",               role: "Senior Mentor",         department: "School of C&IT",                      photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 34, name: "Hyder Nawaz Khan",       role: "Senior Mentor",         department: "School of Management Studies",        photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 35, name: "D Naga Sumukh",          role: "Senior Mentor",         department: "School of CSE",                       photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 36, name: "K Sree Lakshmi",         role: "Senior Mentor",         department: "School of Applied Sciences",          photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 37, name: "Manavi",                 role: "Senior Mentor",         department: "School of Civil Engineering",         photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 38, name: "Prabhat Kumar",          role: "Senior Mentor",         department: "School of EEE",                       photo: null, bio: null, linkedin: null, instagram: null },
+  ],
+  foundation: [
+    { id: 101, name: "Aarushi Verma",   role: "President",         department: "School of Computing",          photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 102, name: "Rohan Kumar",     role: "Vice President",    department: "School of Management",         photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 103, name: "Priya Gowda",    role: "General Secretary", department: "School of ECE",                photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 104, name: "Kiran Raj",      role: "Cultural Secretary",department: "School of Architecture",       photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 105, name: "Neha Singh",     role: "Sports Secretary",  department: "School of Legal Studies",      photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 106, name: "Aditya Mohan",   role: "Technical Head",    department: "School of CSA",                photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 107, name: "Sneha Reddy",    role: "Public Relations",  department: "School of Arts & Humanities",  photo: null, bio: null, linkedin: null, instagram: null },
+    { id: 108, name: "Varun Desai",    role: "Treasurer",         department: "School of Commerce",           photo: null, bio: null, linkedin: null, instagram: null },
+  ],
+};
 
 // Specific gallery image URLs requested
 export const galleryImages = [

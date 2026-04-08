@@ -17,6 +17,7 @@ export default function Navbar() {
     { to: '/', label: 'Home' },
     { to: '/events', label: 'Events' },
     { to: '/clubs', label: 'Clubs' },
+    { to: '/team', label: 'Team' },
     { to: '/gallery', label: 'Gallery' },
     { to: '/complaint', label: 'Complaint' },
     { to: '/ai-chat', label: 'AI Chat' }

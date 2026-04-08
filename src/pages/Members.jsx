@@ -1,143 +1,89 @@
 import React, { useState } from 'react';
-import { Users, Award, Star } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { councilMembers } from '../data/mockData';
 
-const roleColors = {
-  President: 'from-reva-red to-reva-darkred',
-  'Vice President': 'from-purple-600 to-violet-700',
-  Secretary: 'from-blue-600 to-indigo-700',
-  Treasurer: 'from-teal-600 to-cyan-700',
-};
+const AVATAR_GRADIENTS = [
+  ["#D62828","#7b0000"], ["#FFD700","#b8860b"], ["#6C3082","#2d0052"],
+  ["#1565C0","#0a2342"], ["#00695C","#00251a"], ["#AD1457","#560027"],
+  ["#4527A0","#1a0072"], ["#00838F","#00363a"], ["#E65100","#7f2a00"],
+  ["#37474F","#102027"],
+];
 
-function getRoleColor(role) {
-  return roleColors[role] || 'from-white/20 to-white/10';
-}
-
-function MemberCard({ member, compact = false }) {
-  const initials = member.name.split(' ').map(n => n[0]).join('').slice(0, 2);
-  const color = getRoleColor(member.role);
-
-  if (compact) {
-    return (
-      <div className="glass-card p-5 card-hover group flex items-center gap-4">
-        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center font-outfit font-black text-white text-sm shrink-0`}>
-          {initials}
-        </div>
-        <div className="min-w-0">
-          <h3 className="font-outfit font-bold text-white text-sm group-hover:text-reva-gold transition-colors truncate">{member.name}</h3>
-          <p className="text-white/50 text-xs truncate">{member.role}</p>
-        </div>
-      </div>
-    );
-  }
+function MemberCard({ member, index }) {
+  const [imgError, setImgError] = useState(false);
+  const [grad1, grad2] = AVATAR_GRADIENTS[(member.id - 1) % AVATAR_GRADIENTS.length];
+  const initials = member.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
   return (
-    <div className="glass-card overflow-hidden card-hover group">
-      <div className={`h-2 bg-gradient-to-r ${color}`} />
-      <div className="p-6 text-center">
-        {/* Avatar */}
-        <div className={`w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center font-outfit font-black text-white text-2xl mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-          {initials}
-        </div>
-        <h3 className="font-outfit font-bold text-xl text-white mb-1 group-hover:text-reva-gold transition-colors">{member.name}</h3>
-        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${color} text-white mb-3`}>
-          {member.badges?.includes('President') ? <Award size={11} /> : member.badges?.includes('Vice President') ? <Star size={11} /> : null}
-          {member.role}
-        </div>
-        <p className="text-white/40 text-xs mb-1">{member.department} • {member.year}</p>
-        {member.bio && <p className="text-white/50 text-sm mt-3 mb-2 italic leading-relaxed line-clamp-2">{member.bio}</p>}
+    <motion.div
+      className="glass-card p-6 flex flex-col items-center text-center"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.4, delay: (index % 8) * 0.05, ease: 'easeOut' }}
+      whileHover={{ y: -4, borderColor: 'rgba(214,40,40,0.3)' }}
+    >
+      {/* Avatar */}
+      <div
+        className="w-20 h-20 rounded-full overflow-hidden mb-4 border-2 border-white/10 flex items-center justify-center shrink-0"
+        style={{ background: `linear-gradient(135deg, ${grad1}, ${grad2})` }}
+      >
+        {member.photo && !imgError ? (
+          <img
+            src={`/CouncilMembers/${member.photo}`}
+            alt={member.name}
+            loading="lazy"
+            onError={() => setImgError(true)}
+            className="w-full h-full object-cover object-top"
+          />
+        ) : (
+          <span className="font-outfit font-black text-2xl text-white/90">{initials}</span>
+        )}
       </div>
-    </div>
+
+      {/* Name */}
+      <h3 className="font-outfit font-bold text-white text-[15px] leading-tight mb-2">
+        {member.name}
+      </h3>
+
+      {/* Role badge */}
+      <span className="badge badge-red !text-[9px] mb-2">{member.role}</span>
+
+      {/* Department */}
+      <p className="text-white/40 text-[11px] leading-snug line-clamp-2">
+        {member.department}
+      </p>
+    </motion.div>
   );
 }
 
 export default function Members() {
-  const [activeTab, setActiveTab] = useState('current');
+  const members = councilMembers.current;
 
   return (
-    <div className="page-container page-enter">
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="page-container min-h-screen pb-32"
+    >
       {/* Header */}
-      <div className="hero-gradient border-b border-white/10 pt-28 pb-16 px-4 text-center">
-        <div className="inline-flex items-center gap-2 bg-blue-500/15 border border-blue-500/30 rounded-full px-5 py-2 mb-6">
-          <Users size={14} className="text-blue-400" />
-          <span className="text-blue-400 text-sm font-semibold">The Team</span>
-        </div>
-        <h1 className="section-title text-5xl md:text-6xl mb-3">Council Members</h1>
-        <p className="section-subtitle max-w-xl mx-auto">
-          Meet the passionate students working hard to make your campus experience extraordinary
+      <section className="pt-32 pb-16 px-4 text-center border-b border-white/5 bg-gradient-to-b from-[#111827] to-transparent">
+        <div className="badge badge-red mb-4">👥 2025–26</div>
+        <h1 className="font-outfit font-black text-5xl md:text-6xl text-white mb-4 mt-4">
+          Meet the Council
+        </h1>
+        <p className="text-white/50 max-w-xl mx-auto text-lg">
+          38 students. One vision. Building a campus that belongs to everyone.
         </p>
-      </div>
+      </section>
 
-      <div className="section-padding max-w-7xl mx-auto">
-        {/* Tab Switcher */}
-        <div className="flex gap-3 mb-10 justify-center flex-wrap">
-          {[
-            { key: 'current', label: 'Current Council 2025', emoji: '⭐' },
-            { key: 'foundation', label: 'Foundation Batch 2024–25', emoji: '🏛️' },
-          ].map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-200 ${
-                activeTab === tab.key
-                  ? 'bg-reva-red text-white shadow-lg shadow-reva-red/30 scale-105'
-                  : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10'
-              }`}
-            >
-              {tab.emoji} {tab.label}
-            </button>
+      {/* Grid */}
+      <section className="max-w-7xl mx-auto px-4 py-16">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {members.map((member, index) => (
+            <MemberCard key={member.id} member={member} index={index} />
           ))}
         </div>
-
-        {/* Current Council */}
-        {activeTab === 'current' && (
-          <div>
-            {/* Leadership */}
-            <div className="mb-10">
-              <h2 className="font-outfit font-bold text-xl text-white/50 mb-5 flex items-center gap-2">
-                <Award size={18} className="text-reva-gold" /> Leadership
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {councilMembers.current.filter(m =>
-                  ['President', 'Vice President', 'Secretary', 'Treasurer'].includes(m.role)
-                ).map(member => (
-                  <MemberCard key={member.id} member={member} />
-                ))}
-              </div>
-            </div>
-            {/* Core Team */}
-            <div>
-              <h2 className="font-outfit font-bold text-xl text-white/50 mb-5 flex items-center gap-2">
-                <Star size={18} className="text-reva-red" /> Core Team
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {councilMembers.current.filter(m =>
-                  !['President', 'Vice President', 'Secretary', 'Treasurer'].includes(m.role)
-                ).map(member => (
-                  <MemberCard key={member.id} member={member} />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Foundation Batch */}
-        {activeTab === 'foundation' && (
-          <div>
-            <div className="glass-card p-6 mb-8 border-l-4 border-reva-gold">
-              <h3 className="font-outfit font-bold text-white text-lg mb-1">🏛️ Foundation Batch — 2024–25</h3>
-              <p className="text-white/50 text-sm">
-                The pioneering batch that laid the foundation of the REVA University Student Council. Their vision and dedication set the tone for everything that follows.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {councilMembers.foundation.map(member => (
-                <MemberCard key={member.id} member={member} compact />
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+      </section>
+    </motion.div>
   );
 }

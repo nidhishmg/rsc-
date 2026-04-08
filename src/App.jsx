@@ -12,6 +12,7 @@ import Gallery from './pages/Gallery';
 import Complaint from './pages/Complaint';
 import AiChat from './pages/AiChat';
 import Council from './pages/Council';
+import Members from './pages/Members';
 
 import SplitText from './components/ui/SplitText';
 
@@ -87,6 +88,7 @@ function AnimatedRoutes() {
         <Route path="/complaint" element={<PageWrapper><Complaint /></PageWrapper>} />
         <Route path="/ai-chat" element={<PageWrapper><AiChat /></PageWrapper>} />
         <Route path="/council" element={<PageWrapper><Council /></PageWrapper>} />
+        <Route path="/team" element={<PageWrapper><Members /></PageWrapper>} />
       </Routes>
     </AnimatePresence>
   );
