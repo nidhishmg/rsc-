@@ -244,7 +244,7 @@ export default function Home() {
       <FeaturedClubs />
 
       {/* ── [5.5] MYSTERY BOX — REVOTHSAVA TEASER ── */}
-      <MysteryBox onReveal={() => setRevothsavaOpen(true)} />
+      <MysteryBox onReveal={() => navigate('/reveal')} />
       <AnimatePresence>
         {revothsavaOpen && (
           <RevothsavaModal onClose={() => setRevothsavaOpen(false)} />

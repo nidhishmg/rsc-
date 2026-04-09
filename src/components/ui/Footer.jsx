@@ -48,7 +48,12 @@ export default function Footer() {
 
         <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-white/30 text-xs">© 2025 REVA University Student Council.</p>
-          <p className="text-white/30 text-xs flex items-center gap-1">Built with <span className="text-[#D62828]">❤️</span> by REVA Student Council</p>
+          <div className="flex items-center gap-4">
+            <p className="text-white/30 text-xs flex items-center gap-1">Built with <span className="text-[#D62828]">❤️</span> by REVA Student Council</p>
+            <Link to="/admin/login" className="text-white/10 hover:text-white/40 transition-colors" title="Admin Login">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

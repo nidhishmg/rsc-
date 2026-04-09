@@ -177,4 +177,43 @@ export const galleryImages = [
   { id: 12, url: "https://files.reva.ac.in/uploads/album/1640163637.jpg", title: "Allied Sciences Workshop", category: "Events" }
 ];
 
+// Admin credentials (demo only — no real auth)
+export const adminCredentials = [
+  { email: 'admin@reva.edu.in', password: 'admin123', name: 'Super Admin', role: 'superadmin' },
+  { email: 'council@reva.edu.in', password: 'council2025', name: 'Council Head', role: 'editor' },
+];
+
+// Announcements seed data
+export const announcements = [
+  { id: 1, title: 'REVOTHSAVA Date Announcement', body: 'The official date for REVOTHSAVA 2026 will be revealed on the homepage!', pinned: true, date: '2026-04-01' },
+  { id: 2, title: 'Club Registrations Open', body: 'All club registrations for the 2026 batch are now open. Visit the Clubs page.', pinned: false, date: '2026-03-15' },
+  { id: 3, title: 'Sports Meet Postponed', body: 'Due to ground maintenance, the Inter-School Sports Meet has been rescheduled to May 5–10.', pinned: false, date: '2026-03-20' },
+];
+
+// Site settings
+export const siteSettings = {
+  siteTitle: 'REVA Student Council',
+  tagline: 'Your Voice. Your Campus.',
+  countdownTarget: '2026-07-08T00:00:00',
+  contactEmail: 'studentcouncil@reva.edu.in',
+  socialInstagram: 'https://www.instagram.com/reva_student_affairs',
+  socialLinkedin: '',
+  socialYouTube: '',
+};
+
+// localStorage helpers for CMS persistence
+const STORAGE_PREFIX = 'RSC_';
+export function getData(key) {
+  try {
+    const raw = localStorage.getItem(STORAGE_PREFIX + key);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+export function setData(key, value) {
+  try {
+    localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+  } catch {}
+}
+
 export function initializeData() {}

@@ -13,6 +13,10 @@ import Complaint from './pages/Complaint';
 import AiChat from './pages/AiChat';
 import Council from './pages/Council';
 import Members from './pages/Members';
+import RevealPage from './pages/RevealPage';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import SplitText from './components/ui/SplitText';
 
@@ -89,6 +93,9 @@ function AnimatedRoutes() {
         <Route path="/ai-chat" element={<PageWrapper><AiChat /></PageWrapper>} />
         <Route path="/council" element={<PageWrapper><Council /></PageWrapper>} />
         <Route path="/team" element={<PageWrapper><Members /></PageWrapper>} />
+        <Route path="/reveal" element={<RevealPage />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
       </Routes>
     </AnimatePresence>
   );
@@ -105,6 +112,20 @@ function PageWrapper({ children }) {
       {children}
     </motion.div>
   );
+}
+
+const HIDDEN_SHELL_ROUTES = ['/admin', '/admin/login', '/reveal'];
+
+function NavbarWrapper() {
+  const { pathname } = useLocation();
+  if (HIDDEN_SHELL_ROUTES.some(r => pathname.startsWith(r))) return null;
+  return <Navbar />;
+}
+
+function FooterWrapper() {
+  const { pathname } = useLocation();
+  if (HIDDEN_SHELL_ROUTES.some(r => pathname.startsWith(r))) return null;
+  return <Footer />;
 }
 
 function Preloader({ onComplete }) {
@@ -174,11 +195,11 @@ export default function App() {
         ) : (
           <motion.div key="main-app" className="relative z-10 hidden-scrollbar" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
             <ScrollToTop />
-            <Navbar />
+            <NavbarWrapper />
             <main>
               <AnimatedRoutes />
             </main>
-            <Footer />
+            <FooterWrapper />
           </motion.div>
         )}
       </AnimatePresence>
