@@ -3,7 +3,7 @@
 export const councilInfo = {
   name: "REVA University Student Council",
   tagline: "Your Voice. Your Campus.",
-  instagram: "https://www.instagram.com/reva_studentcouncil/",
+  instagram: "https://www.instagram.com/reva_student_affairs?igsh=MXRwbmw4MXZ2M3d5Mg==",
   founded: "2015",
   totalStudents: "8000+"
 };
@@ -120,10 +120,10 @@ export const councilMembers = {
     { id: 8,  name: "Veeksha MS",             role: "Cultural Secretary",    department: "Department of Psychology",            photo: "Veeksha MS.JPG", bio: null, linkedin: null, instagram: null },
     { id: 9,  name: "Shishir M",              role: "Cultural Secretary",    department: "School of C&IT",                      photo: "Shishir M.JPG", bio: null, linkedin: null, instagram: null },
     { id: 10, name: "Shivana Gowda R",        role: "NSS & NCC Secretary",   department: "School of Commerce",                  photo: "Shivana Gowda.JPG", bio: null, linkedin: null, instagram: null },
+    { id: 14, name: "MG Nidhish",             role: "Media Team",            department: "School of ECE",                       photo: "MG Nidhish.JPG", bio: null, linkedin: null, instagram: null },
     { id: 11, name: "Charles S",              role: "Media Team",            department: "School of CSE",                       photo: "Charles S.JPG", bio: null, linkedin: null, instagram: null },
     { id: 12, name: "Pavan Rao D",            role: "Media Team",            department: "School of ECE",                       photo: "Pavan Rao.JPG", bio: null, linkedin: null, instagram: null },
     { id: 13, name: "Raghavan A",             role: "Media Team",            department: "School of ECE",                       photo: "Raghavan A.JPG", bio: null, linkedin: null, instagram: null },
-    { id: 14, name: "MG Nidhish",             role: "Media & Design Team",   department: "School of ECE",                       photo: "MG Nidhish.JPG", bio: null, linkedin: null, instagram: null },
     { id: 15, name: "Sanjay Ramesh",          role: "Technical Team",        department: "School of ECE",                       photo: "Sanjay Ramesh.JPG", bio: null, linkedin: null, instagram: null },
     { id: 16, name: "Mahima Bandela",         role: "Technical Team",        department: "School of Civil Engineering",         photo: "Mahima B.JPG", bio: null, linkedin: null, instagram: null },
     { id: 17, name: "Nikhil Kashyap JV",      role: "PR & Marketing",        department: "School of ECE",                       photo: "Nikhil Kashyap.JPG", bio: null, linkedin: null, instagram: null },

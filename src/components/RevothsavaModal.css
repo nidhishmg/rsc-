@@ -1,0 +1,413 @@
+/* ═══════════════════════════════════════════
+   RevothsavaModal.css — Full-screen fest poster
+   ═══════════════════════════════════════════ */
+
+/* ── Keyframes ── */
+@keyframes orbPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.25); }
+}
+
+@keyframes glitch {
+  0%, 93%, 100% { transform: translateX(0); text-shadow: none; }
+  94% { transform: translateX(-4px); text-shadow: 4px 0 #FF6B2B; }
+  95% { transform: translateX(4px); text-shadow: -4px 0 #6366F1; }
+  96% { transform: translateX(-2px); }
+  97% { transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes dotPulseModal {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.3; transform: scale(0.5); }
+}
+
+@keyframes flipNum {
+  0%   { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
+}
+
+@keyframes particleFly {
+  0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(-500px) rotate(720deg) scale(0.3); opacity: 0; }
+}
+
+/* ── Overlay ── */
+.revo-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* ── Card ── */
+.revo-card {
+  width: min(640px, 94vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #050608;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Hide scrollbar but allow scroll */
+.revo-card::-webkit-scrollbar { width: 4px; }
+.revo-card::-webkit-scrollbar-track { background: transparent; }
+.revo-card::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 4px; }
+
+/* ── Background layers ── */
+.revo-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.revo-orb-1 {
+  width: 380px; height: 380px;
+  background: rgba(255, 107, 43, 0.25);
+  top: -100px; left: -100px;
+  filter: blur(70px);
+  animation: orbPulse 4s ease-in-out infinite;
+}
+
+.revo-orb-2 {
+  width: 320px; height: 320px;
+  background: rgba(99, 102, 241, 0.2);
+  bottom: -80px; right: -80px;
+  filter: blur(70px);
+  animation: orbPulse 5s ease-in-out infinite 1.5s;
+}
+
+.revo-orb-3 {
+  width: 200px; height: 200px;
+  background: rgba(255, 184, 0, 0.12);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  filter: blur(80px);
+  animation: orbPulse 7s ease-in-out infinite 3s;
+}
+
+.revo-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.revo-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(5, 6, 8, 0.8) 100%);
+}
+
+/* ── Content ── */
+.revo-content {
+  position: relative;
+  z-index: 2;
+  padding: 52px 44px 44px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Close button ── */
+.revo-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #9CA3AF;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  z-index: 10;
+}
+
+.revo-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+/* ── Eyebrow pill ── */
+.revo-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 107, 43, 0.12);
+  border: 1px solid rgba(255, 107, 43, 0.35);
+  color: #FF6B2B;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  padding: 6px 18px;
+  border-radius: 30px;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 24px;
+}
+
+.revo-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #FF6B2B;
+  margin-right: 10px;
+  animation: dotPulseModal 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* ── Title ── */
+.revo-title-group {
+  margin-bottom: 6px;
+}
+
+.revo-title-line1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 96px;
+  color: #FFFFFF;
+  letter-spacing: 8px;
+  line-height: 0.85;
+  margin: 0;
+  animation: glitch 6s ease-in-out infinite;
+}
+
+.revo-title-line2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 96px;
+  letter-spacing: 8px;
+  line-height: 0.85;
+  margin: 0;
+  background: linear-gradient(90deg, #FF6B2B, #FFB800, #FF6B2B);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ── Subtitle ── */
+.revo-subtitle {
+  font-size: 12px;
+  color: #6B7280;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 6px 0 28px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Divider ── */
+.revo-divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.revo-divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 107, 43, 0.4), transparent);
+}
+
+.revo-divider-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #FF6B2B;
+  box-shadow: 0 0 16px rgba(255, 107, 43, 0.9);
+  animation: dotPulseModal 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* ── Tags ── */
+.revo-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.revo-tag {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: #9CA3AF;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Countdown ── */
+.revo-countdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.revo-countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+}
+
+.revo-countdown-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  color: #fff;
+  line-height: 1;
+  perspective: 200px;
+  display: inline-block;
+}
+
+.revo-countdown-num.flip {
+  animation: flipNum 0.35s ease-out;
+}
+
+.revo-countdown-label {
+  font-size: 9px;
+  color: #4A4D5E;
+  letter-spacing: 2px;
+  font-family: 'Inter', sans-serif;
+  margin-top: 4px;
+}
+
+.revo-countdown-sep {
+  color: #FF6B2B;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+/* ── CTA ── */
+.revo-cta-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.revo-cta-btn {
+  background: linear-gradient(135deg, #FF6B2B 0%, #FFB800 100%);
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 15px 40px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  transition: box-shadow 0.3s;
+}
+
+.revo-cta-btn:hover {
+  box-shadow: 0 16px 48px rgba(255, 107, 43, 0.55);
+}
+
+.revo-notified {
+  color: #10B981;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 12px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Stats ── */
+.revo-stats {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+.revo-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.revo-stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.revo-stat-label {
+  font-size: 10px;
+  color: #4A4D5E;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  margin-top: 2px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .revo-content {
+    padding: 40px 20px 28px;
+  }
+
+  .revo-title-line1,
+  .revo-title-line2 {
+    font-size: 60px;
+    letter-spacing: 4px;
+  }
+
+  .revo-countdown-num {
+    font-size: 30px;
+  }
+
+  .revo-countdown-sep {
+    font-size: 22px;
+  }
+
+  .revo-countdown-unit {
+    min-width: 42px;
+  }
+
+  .revo-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .revo-cta-btn {
+    padding: 13px 28px;
+    font-size: 12px;
+  }
+}

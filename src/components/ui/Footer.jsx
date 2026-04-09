@@ -38,7 +38,7 @@ export default function Footer() {
           <div>
             <h4 className="font-outfit font-bold text-white mb-4 uppercase tracking-wider text-sm">Connect</h4>
             <div className="space-y-3 text-sm text-white/50 flex flex-col">
-              <a href="https://www.instagram.com/reva_studentcouncil/" target="_blank" rel="noreferrer" className="hover:text-[#FFD700] transition-colors w-fit">Instagram (@reva_studentcouncil)</a>
+              <a href="https://www.instagram.com/reva_student_affairs?igsh=MXRwbmw4MXZ2M3d5Mg==" target="_blank" rel="noreferrer" className="hover:text-[#FFD700] transition-colors w-fit">Instagram (@reva_student_affairs)</a>
               <span className="w-fit">Email: studentcouncil@reva.edu.in</span>
               <span className="w-fit">Location: REVA University, Bengaluru</span>
             </div>

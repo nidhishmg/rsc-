@@ -1,10 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, useScroll, useTransform, useMotionValue } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValue, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { events, councilInfo } from '../data/mockData';
 import FeaturedClubs from '../components/FeaturedClubs';
+import MysteryBox from '../components/MysteryBox';
+import RevothsavaModal from '../components/RevothsavaModal';
 
 // UI Components
 import AuroraBackground from '../components/ui/AuroraBackground';
@@ -24,6 +26,7 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Home() {
   const heroRef = useRef(null);
   const navigate = useNavigate();
+  const [revothsavaOpen, setRevothsavaOpen] = useState(false);
   const upcomingEvents = events.filter(e => e.category === 'upcoming').slice(0, 3);
   
   // Custom mock images for gallery preview
@@ -62,7 +65,36 @@ export default function Home() {
       <section ref={heroRef} className="relative min-h-[100svh] flex flex-col items-center justify-center text-center pt-20 px-4">
         <AuroraBackground />
         <ParticleField count={30} />
-        
+
+        {/* Campus background — blended at ~40% visibility */}
+        <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none" style={{ opacity: 0.35 }}>
+          <motion.img
+            src="/campus-bg.jpg"
+            alt=""
+            aria-hidden="true"
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 3, ease: 'easeOut' }}
+            className="w-full h-full object-cover object-center"
+            style={{ filter: 'saturate(0.3) brightness(0.5)' }}
+          />
+          {/* Dark overlay to tint the image into the dark theme */}
+          <div
+            className="absolute inset-0"
+            style={{ background: 'rgba(11,15,26,0.5)', mixBlendMode: 'multiply' }}
+          />
+          {/* Bottom fade — dissolves image into the rest of the page */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-[45%]"
+            style={{ background: 'linear-gradient(to top, #0B0F1A 0%, transparent 100%)' }}
+          />
+          {/* Top fade — subtle vignette at top */}
+          <div
+            className="absolute top-0 left-0 right-0 h-[20%]"
+            style={{ background: 'linear-gradient(to bottom, rgba(11,15,26,0.6) 0%, transparent 100%)' }}
+          />
+        </div>
+
         <div className="hero-content relative z-10 max-w-4xl w-full flex flex-col items-center">
           <FloatingObject floatY={20} duration={6} className="mb-8">
             <img src="/RevaStudentCouncil.png" alt="RSC Logo" className="w-[160px] h-auto object-contain drop-shadow-[0_0_30px_rgba(214,40,40,0.4)]" />
@@ -211,6 +243,14 @@ export default function Home() {
       {/* ── [5] FEATURED CLUBS ── */}
       <FeaturedClubs />
 
+      {/* ── [5.5] MYSTERY BOX — REVOTHSAVA TEASER ── */}
+      <MysteryBox onReveal={() => setRevothsavaOpen(true)} />
+      <AnimatePresence>
+        {revothsavaOpen && (
+          <RevothsavaModal onClose={() => setRevothsavaOpen(false)} />
+        )}
+      </AnimatePresence>
+
       {/* ── [6] MISSION STATEMENT ── */}
       <section className="py-32 px-4 relative flex items-center justify-center text-center overflow-hidden">
         <GlowOrb color="rgba(214,40,40,0.15)" size={600} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
@@ -251,26 +291,24 @@ export default function Home() {
 
       {/* ── [8] AI CHAT TEASER ── */}
       <section className="section-padding max-w-5xl mx-auto">
-        <SpotlightCard className="p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 border-[#FFD700]/10 bg-gradient-to-br from-[#0B0F1A] to-[#1a1100]">
-          <div className="md:w-1/2 text-center md:text-left">
-            <div className="badge badge-gold mb-4">✨ New Feature</div>
-            <h2 className="font-outfit font-black text-3xl md:text-4xl text-white mb-4 leading-tight">
-              Have a question about campus?
-            </h2>
-            <p className="text-white/50 mb-8 leading-relaxed">
-              Skip the long lines. Ask our smart AI Assistant about clubs, events, faculty rooms, or how to register a complaint.
-            </p>
-            <Link to="/ai-chat">
-              <MagneticButton className="btn-primary px-6 py-3">
-                Chat with RSC AI
-              </MagneticButton>
-            </Link>
-          </div>
-          <div className="md:w-1/2 relative h-64 w-full">
-            <FloatingObject floatY={10} duration={4} className="absolute right-10 top-0 glass-card p-4 rounded-b-none rounded-2xl px-6 bg-[#D62828]/20 border-[#D62828]/30">
+        <SpotlightCard className="p-10 md:p-16 flex flex-col items-center text-center gap-8 border-[#FFD700]/10 bg-gradient-to-br from-[#0B0F1A] to-[#1a1100]">
+          <div className="badge badge-gold">✨ New Feature</div>
+          <h2 className="font-outfit font-black text-3xl md:text-4xl text-white leading-tight max-w-lg">
+            Have a question about campus?
+          </h2>
+          <p className="text-white/50 leading-relaxed max-w-md">
+            Skip the long lines. Ask our smart AI Assistant about clubs, events, faculty rooms, or how to register a complaint.
+          </p>
+          <Link to="/ai-chat">
+            <MagneticButton className="btn-primary px-6 py-3">
+              Chat with RSC AI
+            </MagneticButton>
+          </Link>
+          <div className="relative w-full max-w-md h-40 mt-4">
+            <FloatingObject floatY={10} duration={4} className="absolute right-4 top-0 glass-card p-4 rounded-b-none rounded-2xl px-6 bg-[#D62828]/20 border-[#D62828]/30">
               <span className="text-white text-sm">When is REVAMP? 🤩</span>
             </FloatingObject>
-            <FloatingObject floatY={8} duration={3.5} delay={1} className="absolute left-0 bottom-10 glass-card p-4 rounded-t-none rounded-2xl px-6 bg-[#FFD700]/10 border-[#FFD700]/20">
+            <FloatingObject floatY={8} duration={3.5} delay={1} className="absolute left-4 bottom-0 glass-card p-4 rounded-t-none rounded-2xl px-6 bg-[#FFD700]/10 border-[#FFD700]/20">
               <span className="text-white/80 text-sm">REVAMP is perfectly timed for March 15th! Get your squad ready. 🎉</span>
             </FloatingObject>
           </div>
@@ -289,7 +327,7 @@ export default function Home() {
           <a href={councilInfo.instagram} target="_blank" rel="noreferrer">
             <MagneticButton className="px-8 py-4 rounded-2xl font-outfit font-bold text-white shadow-[0_10px_30px_rgba(225,48,108,0.3)] transition-transform hover:scale-105 flex items-center gap-3"
               style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}>
-              <Star size={18} fill="currentColor" /> Follow @reva_studentcouncil
+              <Star size={18} fill="currentColor" /> Follow @reva_student_affairs
             </MagneticButton>
           </a>
         </div>

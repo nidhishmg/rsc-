@@ -235,3 +235,48 @@ html, body {
 .club-card-hover:hover .club-card-accent-line {
   width: 60% !important;
 }
+
+/* ─── Photo Card hover effects ─── */
+.group:hover .photo-card-img {
+  transform: scale(1.06);
+  filter: blur(3px) brightness(0.6);
+}
+
+.group:hover .photo-card-overlay {
+  opacity: 1 !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+
+.group:hover .photo-card-details {
+  max-height: 80px !important;
+  opacity: 1 !important;
+}
+
+/* ─── Glow ring spin ─── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Skeleton shimmer ─── */
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── GPU compositing hint ─── */
+.photo-card-img {
+  will-change: transform, filter;
+}
+
+/* ─── Mobile: lighter blur for performance ─── */
+@media (max-width: 768px) {
+  .group:hover .photo-card-img {
+    filter: blur(2px) brightness(0.65);
+  }
+  .group:hover .photo-card-overlay {
+    backdrop-filter: blur(2px) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+  }
+}
